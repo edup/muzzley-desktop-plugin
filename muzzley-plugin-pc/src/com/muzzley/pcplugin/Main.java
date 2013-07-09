@@ -8,8 +8,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.muzzley.pcplugin.layout.MainFrame;
 
 
-
-
 public class Main
 {
   public static void main(String[] args)
@@ -42,8 +40,6 @@ public class Main
         });
 
   	  
-    	
-      
       
     }catch (Exception e) {
       e.printStackTrace();

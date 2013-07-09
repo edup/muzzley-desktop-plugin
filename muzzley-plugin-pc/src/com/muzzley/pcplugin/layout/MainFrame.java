@@ -30,13 +30,10 @@ import com.muzzley.sdk.appliance.MZActivity;
 import com.muzzley.sdk.appliance.Participant;
 
 public class MainFrame{
-
 	MZActivity mzActivity=null;
 	Consumer consumer;
 
-	
 	final static int extraWindowWidth = 100;
-	
 	
 	// Create a constructor method
 	public MainFrame(){
@@ -129,9 +126,12 @@ public class MainFrame{
 		try {
 			this.mzActivity = mzActivity;
 			BufferedImage qrcode_img = ImageIO.read(new URL(mzActivity.getQRCodeUrl()));
-			
 			JLabel picLabel = new JLabel(new ImageIcon( qrcode_img ));
 			getMainPanel().add(picLabel);
+			
+			JLabel activityId = new JLabel("Activity: " + mzActivity.getActivityId());
+			getMainPanel().add(activityId);
+			
 			frame.repaint();			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block

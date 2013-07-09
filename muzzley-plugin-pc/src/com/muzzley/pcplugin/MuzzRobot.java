@@ -1,5 +1,6 @@
 package com.muzzley.pcplugin;
 
+import java.awt.Point;
 import java.awt.Robot;
 import java.io.PrintStream;
 

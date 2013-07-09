@@ -69,6 +69,7 @@ public class Consumer
 				}
 						
 				try{					
+					System.out.println("Trying to Process Message: " + msg.toString());
 					MZWidgetHandler.getWidgetHandler(participant, msg).processMessage(msg);
 				}catch(NullPointerException e2){
 					System.out.println("Not found: " + e2.getMessage());
@@ -105,8 +106,6 @@ public class Consumer
     this.mainframe = mainframe;
     createNewSession();
     
-    	
-      //processMessage(message);
      
   } 
   
@@ -133,170 +132,8 @@ public class Consumer
 				
 			}
 		});
-	  
-	  
-	  /*
-	  	Iterator it = participants.entrySet().iterator();
-		while (it.hasNext()) {
-		    Map.Entry pairs = (Map.Entry)it.next();
-		    System.out.println(pairs.getKey() + " = " + pairs.getValue());
-		    		    
-		    session.changeWidget((Participant)pairs.getValue(), widget_name, new MessageReceivedHandler() {			
-				@Override
-				public void processMessage(JSONObject msg) {
-					// TODO Auto-generated method stub
-					System.out.println("User widget is ready to start receiving messages");
-					
-				}
-			});
-		    
-		    
-		    //it.remove(); // avoids a ConcurrentModificationException
-		}*/
-	  
-		
-		
-                                                              	  
+	                                                       	  
   }
-  
-  
-
-	/*
-	  public void processMessage(Participant participant, JSONObject json)
-	  {
-	    try
-	    { 
-	      String action = json.getString("ACTION");
-	      String id_user = json.getString("id_user");
-	      
-	      System.out.println(json.toString());
-	      
-	
-	      if (action.compareTo("HI") == 0) {
-	        this.client = new Client(id_user, json.getString("name"));
-	        
-	        String msg_to_send = "{\"action\":\"change_widget_type\", \"widget_type\": 13, \"OPTIONS\": {}}";
-	        //this.producer.publish(id_user, msg_to_send);
-	        
-	      }
-	      else if (action.compareTo("WIDGET_OPTION") == 0)
-	      {
-	
-	        JSONObject json_option = new JSONObject(json.getString("value"));
-	        this.mobile_width = json_option.getInt("width");
-	        this.mobile_height = json_option.getInt("height");
-	
-	      }
-	      else if (action.compareTo("screen_draw") == 0) {
-	        int x = json.getInt("x");
-	        int y = json.getInt("y");
-	        
-	        x = x * this.screen_dimension.width / this.mobile_width;
-	        y = y * this.screen_dimension.height / this.mobile_height;
-	        
-	        this.robot.mouseMove(x, y);
-	      }
-	      else if (action.compareTo("MOUSE_BUTTON_EVENT") == 0) {
-	        System.out.println(json);
-	        
-	        int button = json.getInt("button");
-	        int type = json.getInt("event_type");
-	        
-	        if (type == 1) {
-	          this.robot.mousePress(button);
-	        } else {
-	          this.robot.mouseRelease(button);
-	        } 
-	      }
-	      else if (action.compareTo("TOUCH_EVENT") == 0) {
-	        int value = json.getInt("value");
-	        this.robot.touchEvent(value);
-	      }
-	      else if (action.compareTo("CHAR") == 0) {
-	        int code = json.getInt("CHAR");
-	        this.robot.keyEvent(code);
-	      }
-	      else if (action.compareTo("KEY_EVENT") == 0) {
-	        System.out.println(json.toString());
-	        int code = json.getInt("key");
-	        int event_type = json.getInt("event_type");
-	        
-	        this.robot.keyEvent(code, event_type);
-	      }
-	      else if (action.compareTo("BUTTON_EVENT") == 0) {
-	        String button = json.getString("button");
-	        int event_type = json.getInt("event_type");
-	        
-	        int code = 32;
-	        if (button.compareTo("A") == 0) {
-	          code = 32;
-	        }
-	        else if (button.compareTo("B") == 0) {
-	          code = 82;
-	        }
-	        else if (button.compareTo("@A") == 0) {
-	          code = 32;
-	        }
-	        else if (button.compareTo("@B") == 0) {
-	          code = 82;
-	        }
-	        else if (button.compareTo("@1") == 0) {
-	          code = 40;
-	        }
-	        else if (button.compareTo("@2") == 0) {
-	          code = 38;
-	        }
-	        else if (button.compareTo("@3") == 0) {
-	          code = 69;
-	        }
-	        else if (button.compareTo("@4") == 0) {
-	          code = 87;
-	        }
-	        else if (button.compareTo("@U") == 0) {
-	          code = 40;
-	        }
-	        else if (button.compareTo("@D") == 0) {
-	          code = 38;
-	        }
-	        else if (button.compareTo("@L") == 0) {
-	          code = 37;
-	        }
-	        else if (button.compareTo("@R") == 0) {
-	          code = 39;
-	        } 
-	        
-	        this.robot.keyEvent(code, event_type);
-	      }
-	      else if (action.compareTo("GESTURE") == 0) {
-	        String name = json.getString("name");
-	        
-	        int code = 32;
-	        if (name.compareTo("confirmed") == 0) {
-	          code = 122;
-	        }
-	        else if (name.compareTo("wrong") == 0)
-	        {
-	
-	
-	          code = 32;
-	
-	        }
-	        else if (name.compareTo("left") == 0) {
-	          code = 37;
-	        }
-	        else if (name.compareTo("right") == 0) {
-	          code = 39;
-	        } 
-	        this.robot.keyEvent(code, 1);
-	        this.robot.keyEvent(code, 2);
-	      } else {
-	        System.out.println(json.toString());
-	      } 
-	    } catch (Exception e) {
-	      e.printStackTrace();
-	    } 
-	  }*/ 
-  
   
   public void init(String token){
 		String server_address = "ws://platform.geo.muzzley.com:80/ws";

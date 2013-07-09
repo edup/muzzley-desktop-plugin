@@ -46,7 +46,10 @@ public abstract class MZWidgetHandler {
 		return widget;
 	}
 	
-	public static MZWidgetHandler onWidgetChanged(Participant participant, String widget_name){				
+	public static MZWidgetHandler onWidgetChanged(Participant participant, String widget_name){		
+		
+		//ADD THE INTERFACE HANDLER HERE
+		
 		//if not in memory it creates a new one
 		MZWidgetHandler widget_object = null;
 		if(widget_name.compareTo("gamepad")==0){ 
@@ -56,7 +59,17 @@ public abstract class MZWidgetHandler {
 		if(widget_name.compareTo("wheel")==0){ 
 			widget_object = new MZWidgetWheel(participant);
 			System.out.println("Created new object wheel");
+		}else
+		if(widget_name.compareTo("swipeNavigator")==0){ 
+			widget_object = new MZWidgetSwipe(participant);
+			System.out.println("Created new object swipe");
+		}else
+		if(widget_name.compareTo("drawpad")==0){ 
+			widget_object = new MZWidgetDrawpad(participant);
+			System.out.println("Created new object drawpad");
 		}
+		
+		
 		
 		widgets.put(participant.getPId(), widget_object);
 		
