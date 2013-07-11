@@ -9,22 +9,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.example.muzzley.MZActivityListener;
 import com.muzzley.pcplugin.handlers.MZWidgetHandler;
 import com.muzzley.pcplugin.layout.MainFrame;
-import com.muzzley.sdk.MZConnectionStatus;
-import com.muzzley.sdk.MessageReceivedHandler;
-import com.muzzley.sdk.appliance.MZActivity;
-import com.muzzley.sdk.appliance.MZConnectionAppliance;
-import com.muzzley.sdk.appliance.Participant;
-import com.muzzley.sdk.appliance.listeners.CreateActivityListener;
 
 
-public class Consumer
+public class MuzzleyStateMachine
 {
+	
+	
+	/*
   static private MuzzRobot robot;
   Client client;
   int mobile_width;
@@ -99,7 +92,7 @@ public class Consumer
 	
 	
   
-  public Consumer(MainFrame mainframe)
+  public MuzzleyStateMachine(MainFrame mainframe)
     throws IOException, InterruptedException
   {
     this.robot = new MuzzRobot();
@@ -216,18 +209,8 @@ public class Consumer
 			public void onParticipant(Participant participant) {
 				
 				mainframe.onParticipant(participant);
-				Consumer.this.changeWidget(participant, "gamepad");
+				MuzzleyStateMachine.this.changeWidget(participant, "gamepad");
 				// TODO Auto-generated method stub
-				/*
-				changeWidget(participant, "gamepad", new MessageReceivedHandler() {
-					
-					@Override
-					public void processMessage(JSONObject msg) {
-						// TODO Auto-generated method stub
-						System.out.println("User widget is ready to start receiving messages");						
-						
-					}
-				});*/
 			}
 			
 			
@@ -261,4 +244,6 @@ public class Consumer
       e.printStackTrace();
     } 
   } 
+  
+  */
 } 

@@ -14,13 +14,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.muzzley.pcplugin.Consumer;
+import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.components.Key;
-import com.muzzley.sdk.appliance.Participant;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.muzzley.lib.Participant;
+
 
 public class MZWidgetWheel extends MZWidgetHandler{
 	final String MY_NAME = "wheel";
@@ -43,7 +44,7 @@ public class MZWidgetWheel extends MZWidgetHandler{
 	}
 
 	@Override
-	public void processMessage(JSONObject message) {
+	public void processMessage(Participant.WidgetAction data) {
 		// TODO Auto-generated method stub
 		
 		int button_up = ((Key)combo_up.getSelectedItem()).getValue();
@@ -59,9 +60,8 @@ public class MZWidgetWheel extends MZWidgetHandler{
 		
 		
 		try {			
-			JSONObject data = message.getJSONObject("d");
-			String component = data.getString("c");
-			String event = data.getString("e");
+			String component = (String)data.c;
+			String event = (String) data.e;
 						
 			if(event.compareTo("press")==0){				
 				if(component.compareTo("dl")==0){
@@ -71,7 +71,7 @@ public class MZWidgetWheel extends MZWidgetHandler{
 						repeater.stop = true;
 					}
 										
-					int value = data.getInt("v");
+					int value = Integer.parseInt(data.v.toString());
 					System.out.println("Value: " + value);
 					int key=0;					
 					if(value==25){
@@ -165,7 +165,7 @@ public class MZWidgetWheel extends MZWidgetHandler{
 				}
 			}
 		
-		} catch (JSONException e) {
+		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

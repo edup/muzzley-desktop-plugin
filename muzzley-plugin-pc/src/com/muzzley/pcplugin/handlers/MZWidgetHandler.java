@@ -4,44 +4,42 @@ import java.util.HashMap;
 
 import javax.swing.JPanel;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import com.muzzley.pcplugin.Consumer;
+import com.google.gson.JsonObject;
+import com.muzzley.lib.Participant;
+import com.muzzley.pcplugin.MuzzApp;
+import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
-import com.muzzley.sdk.appliance.Participant;
 
 public abstract class MZWidgetHandler {
-	static HashMap<Integer, MZWidgetHandler> widgets = new HashMap<Integer, MZWidgetHandler>();
+	static HashMap<String, MZWidgetHandler> widgets = new HashMap<String, MZWidgetHandler>();
 	
 	
 	
-	public static String[] WIDGETS = { "Choose a widget...", "gamepad", "drawpad", "switch", "swipeNavigator", "wheel", "keyboard"};	
-	public abstract void processMessage(JSONObject message);
+	public static String[] WIDGETS = { "Choose a widget...", "gamepad", "drawpad", "switch", "swipeNavigator", "wheel", "keyboard", "tap"};	
+	public abstract void processMessage(Participant.WidgetAction message);
 	public abstract JPanel getWidgetPanel();
 	
 	Participant participant;
-	MuzzRobot robot = Consumer.getRobot();	
+	protected MuzzRobot robot = MuzzApp.getRobot();	
 	
 	public MZWidgetHandler(Participant participant){
 		// TODO Auto-generated constructor stub
 		this.participant = participant;
 	}
 	
-	public static MZWidgetHandler getWidgetHandler(Participant participant, JSONObject message){		
-		MZWidgetHandler widget = widgets.get(participant.getPId());
+	public static MZWidgetHandler getWidgetHandler(Participant participant, Participant.WidgetAction data){		
+		MZWidgetHandler widget = widgets.get(participant.id);
 		
 		if(widget==null){ 
 			//THIS IS BECAUSE ANDROID APP SEND DIFFERENT SIGNAL THAN IOS
 			try{
-				//System.out.println("Message: " + message.toString());
-				JSONObject data = message.getJSONObject("d");
-				String widget_name = data.getString("w");
+				String widget_name = data.w;
 				return onWidgetChanged(participant, widget_name);
 			}catch(Exception e){}
 		}
 		
-		System.out.println("Getting widget for participant: " + participant.getPId() + ", " + widget);
+		//System.out.println("Getting widget for participant: " + participant.id + ", " + widget);
 		     
 		return widget;
 	}
@@ -67,11 +65,19 @@ public abstract class MZWidgetHandler {
 		if(widget_name.compareTo("drawpad")==0){ 
 			widget_object = new MZWidgetDrawpad(participant);
 			System.out.println("Created new object drawpad");
+		}else
+		if(widget_name.compareTo("drawpad")==0){ 
+			widget_object = new MZWidgetDrawpad(participant);
+			System.out.println("Created new object drawpad");
+		}else
+		if(widget_name.compareTo("tap")==0){ 
+			widget_object = new MZWidgetTap(participant);
+			System.out.println("Created new object tap");
 		}
 		
 		
 		
-		widgets.put(participant.getPId(), widget_object);
+		widgets.put(participant.id, widget_object);
 		
 		return widget_object;
 	}

@@ -18,44 +18,30 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import com.muzzley.pcplugin.Consumer;
+import com.muzzley.lib.Activity;
+import com.muzzley.lib.Participant;
+import com.muzzley.pcplugin.Consts;
+import com.muzzley.pcplugin.MuzzApp;
 import com.muzzley.pcplugin.handlers.MZWidgetHandler;
-import com.muzzley.sdk.appliance.MZActivity;
-import com.muzzley.sdk.appliance.Participant;
 
 public class MainFrame{
-	MZActivity mzActivity=null;
-	Consumer consumer;
-
+	MuzzApp muzzapp;
 	final static int extraWindowWidth = 100;
 	
 	// Create a constructor method
 	public MainFrame(){
-	  // All we do is call JFrame's constructor.
-	  // We don't need anything special for this
-	  // program.
 	  super();
-	  
-	  	try {
-			consumer = new Consumer(this);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	  	
+	  //consumer = new MuzzleyStateMachine(this);
+	  muzzapp = new MuzzApp("41f59b4f660cf28b", this);	  	
 	}
 	
 	
-	HashMap<Integer, JPanel> tabs = new HashMap<Integer, JPanel>();	
+	HashMap<String, JPanel> tabs = new HashMap<String, JPanel>();	
 	JTabbedPane tabbedPane;
 	public void addComponentToPane(Container pane) {
         
@@ -71,19 +57,47 @@ public class MainFrame{
                 return size;
             }
         };
+        card.setBackground(Color.WHITE);
+        card.setLayout(new BoxLayout(card, BoxLayout.PAGE_AXIS));
         
+        
+        BufferedImage qrcode_img;
+		try {
+			qrcode_img = ImageIO.read(new URL(Consts.URL_LOGO));
+			JLabel picLabel = new JLabel(new ImageIcon( qrcode_img ));
+			card.add(picLabel, BorderLayout.EAST);
+			
+			picLabel.setAlignmentX(card.LEFT_ALIGNMENT);
+			
+			//card.add(Box.createRigidArea(new Dimension(1,0)));
+			//card.add(Box.createHorizontalGlue());
+
+
+		}
+		catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
         tabbedPane.addTab("Main", card);
-        tabs.put(0, card);             
+        tabs.put("0", card);             
         pane.add(tabbedPane, BorderLayout.CENTER);
+        
+        
         
     }
 	
-	private JPanel getNewTab(int id, String name){
+	private JPanel getNewTab(String id, String name){
 		//Create the "cards".
-        JPanel card = new JPanel();
-        
+        JPanel card = new JPanel();        
         card.setLayout(new GridBagLayout());
-		
+		card.setBackground(Color.WHITE);
+ 
+        
         tabbedPane.addTab(name, card);
         tabs.put(id, card);
 
@@ -100,14 +114,17 @@ public class MainFrame{
 	static JFrame frame;
     public static void createAndShowGUI() {
         //Create and set up the window.
-        frame = new JFrame("Muzzley PC Plugin");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        frame = new JFrame("Muzzley plugin - You Control!");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
         
         //Create and set up the content pane.
         MainFrame demo = new MainFrame();
         demo.addComponentToPane(frame.getContentPane());
- 
+         
+        Container a = frame.getContentPane();
+        a.setBackground(Color.WHITE);
+        
+        
         //Display the window.
         frame.pack();
         frame.setSize(640, 480);
@@ -115,29 +132,42 @@ public class MainFrame{
     }
 	
 	JPanel getMainPanel(){ 
-		return tabs.get(0);
+		return tabs.get("0");
 	}
 	
 	JPanel getParticipantPanel(Participant participant){ 
-		return tabs.get(participant.getPId());
+		return tabs.get(participant.id);
 	}
 	
-	public void setActivity(MZActivity mzActivity){		
+	public void setActivity(Activity mzActivity){		
 		try {
-			this.mzActivity = mzActivity;
-			BufferedImage qrcode_img = ImageIO.read(new URL(mzActivity.getQRCodeUrl()));
+			JLabel activityId = new JLabel("Activity: " + mzActivity.id);
+			getMainPanel().add(activityId);
+			
+			
+			//this.mzActivity = mzActivity;
+			BufferedImage qrcode_img = ImageIO.read(new URL(mzActivity.qrCodeUrl));
 			JLabel picLabel = new JLabel(new ImageIcon( qrcode_img ));
 			getMainPanel().add(picLabel);
 			
-			JLabel activityId = new JLabel("Activity: " + mzActivity.getActivityId());
-			getMainPanel().add(activityId);
 			
-			frame.repaint();			
+			
+			
+			System.out.println(activityId);
+						
+			frame.repaint();
+			System.out.println("Repainted");
+			frame.repaint();
+			System.out.println("Repainted2");
+			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e){
+			System.out.println("Some exception occurred: " + e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -145,7 +175,7 @@ public class MainFrame{
 	
 	
 	public void onParticipant(Participant participant) {
-		JPanel participant_panel = getNewTab(participant.getPId(), participant.getName());
+		JPanel participant_panel = getNewTab(participant.id, participant.name);
 		paintWidgetsList(participant, participant_panel);
 		
 		try{
@@ -155,7 +185,7 @@ public class MainFrame{
 	}
 	
 	public void onParticipantQuit(Participant participant) {
-		JPanel pane = tabs.remove(participant.getPId());
+		JPanel pane = tabs.remove(participant.id);
 		try{
 			//TODO: MARTELO
 			tabbedPane.remove(pane);
@@ -180,7 +210,7 @@ public class MainFrame{
 		        
 		        System.out.println("Changed: " + widgetName);
 				if(cb.getSelectedIndex()!=0)
-					consumer.changeWidget(current_participant, widgetName);
+					muzzapp.changeWidget(current_participant, widgetName);
 			}
 		});
 		
@@ -202,7 +232,8 @@ public class MainFrame{
 	public JPanel paintPhoto(Participant participant){
 		try {
 			JPanel panel= new JPanel();
-			BufferedImage img = ImageIO.read(new URL(participant.getPhotoUrl()));
+			panel.setBackground(Color.WHITE);
+			BufferedImage img = ImageIO.read(new URL(participant.photoUrl));
 			
 			JLabel picLabel = new JLabel(new ImageIcon( img.getScaledInstance(120, 100, Image.SCALE_SMOOTH) ));
 			panel.add(picLabel);
@@ -221,6 +252,7 @@ public class MainFrame{
 	
 	public void setWidgetPanel(Participant participant, JPanel widget_panel){		
 		getParticipantPanel(participant).removeAll();
+		widget_panel.setBackground(Color.WHITE);
 		
 		paintWidgetsList(participant, getParticipantPanel(participant));
 		getParticipantPanel(participant).remove(widget_panel);

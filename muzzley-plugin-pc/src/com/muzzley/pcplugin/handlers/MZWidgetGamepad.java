@@ -14,13 +14,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import com.muzzley.pcplugin.Consumer;
+
+import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.components.Key;
-import com.muzzley.sdk.appliance.Participant;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.muzzley.lib.Participant;
+
 
 public class MZWidgetGamepad extends MZWidgetHandler{
 	final String MY_NAME = "gamepad";
@@ -48,8 +51,10 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 	}
 
 	@Override
-	public void processMessage(JSONObject message) {
+	public void processMessage(Participant.WidgetAction data) {
 		// TODO Auto-generated method stub
+		
+		System.out.println("Processing Message on gamepad");
 		
 		int button_up = ((Key)combo_up.getSelectedItem()).getValue();
 		int button_down = ((Key)combo_down.getSelectedItem()).getValue();
@@ -64,13 +69,13 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		
 		
 		try {			
-			JSONObject data = message.getJSONObject("d");
-			String component = data.getString("c");
-			String event = data.getString("e");
+			String component = (String)data.c;
+			String event = (String) data.e;
+					
 			
 			if(event.compareTo("press")==0){
 				if(component.compareTo("jl")==0){
-					int value = Integer.parseInt(data.getString("v"));
+					int value = Integer.parseInt(data.v.toString());
 					System.out.println("Value: " + value);
 					int key=0;
 					if(value==0){
@@ -172,9 +177,10 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 				}
 			}
 		
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		}
 		
 	}
@@ -184,7 +190,8 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		int button_down = ((Key)combo_down.getSelectedItem()).getValue();
 		int button_left = ((Key)combo_left.getSelectedItem()).getValue();
 		int button_right = ((Key)combo_right.getSelectedItem()).getValue();
-		  
+
+		
 		robot.keyReset(button_up);
 		robot.keyReset(button_down);
 		robot.keyReset(button_left);

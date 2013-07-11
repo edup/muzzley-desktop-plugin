@@ -14,20 +14,27 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.muzzley.pcplugin.Consumer;
+import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.components.Key;
-import com.muzzley.sdk.appliance.Participant;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.muzzley.lib.Participant;
+
 
 public class MZWidgetSwipe extends MZWidgetHandler{
-	final String MY_NAME = "swipe";
+	final String MY_NAME = "swipeNavigator";
 	JComboBox<Key> combo_up;
 	JComboBox<Key> combo_down;
 	JComboBox<Key> combo_left;
 	JComboBox<Key> combo_right;
+	
+	JComboBox<Key> combo_tap;
+	JComboBox<Key> combo_bOk;
+	JComboBox<Key> combo_bBack;
+	
+	
 	
 	
 	public static int martelada_counter=0; //Isto é uma martelada para saber se é o user 1 ou 2 que entra porque ainda não temos mapeamento de keys
@@ -41,7 +48,7 @@ public class MZWidgetSwipe extends MZWidgetHandler{
 	}
 
 	@Override
-	public void processMessage(JSONObject message) {
+	public void processMessage(Participant.WidgetAction data) {
 		// TODO Auto-generated method stub
 		
 		int button_up = ((Key)combo_up.getSelectedItem()).getValue();
@@ -49,80 +56,65 @@ public class MZWidgetSwipe extends MZWidgetHandler{
 		int button_left = ((Key)combo_left.getSelectedItem()).getValue();
 		int button_right = ((Key)combo_right.getSelectedItem()).getValue();
 		
+		int button_tap = ((Key)combo_tap.getSelectedItem()).getValue();
+		int button_ok = ((Key)combo_bOk.getSelectedItem()).getValue();
+		int button_back = ((Key)combo_bBack.getSelectedItem()).getValue();
+		
+		
+		
 		try {			
-			JSONObject data = message.getJSONObject("d");
-			String component = data.getString("c");
-			String event = data.getString("e");
+			String component = (String)data.c;
+			String event = (String) data.e;
 			
-			if(event.compareTo("press")==0){
-				if(component.compareTo("jl")==0){
-					int value = Integer.parseInt(data.getString("v"));
+			if(event.compareTo("swipe")==0){
+					String value = data.v.toString();
 					System.out.println("Value: " + value);
 					int key=0;
-					if(value==0){
+					if(value.compareTo("r")==0){
 						//TURN RIGHT
 						System.out.println("RIGHT; "+button_right);
 						keyReset();
 						robot.keyEvent(button_right, 1);
+						robot.keyEvent(button_right, 2);
 					}
 					else
-					if(value==180){
+					if(value.compareTo("l")==0){
 						//TURN LEFT
 						System.out.println("LEFT: "+button_left);
 						keyReset();
 						robot.keyEvent(button_left, 1);
+						robot.keyEvent(button_left, 2);
 					}else
-					if(value==270){
+					if(value.compareTo("d")==0){
 						//TURN DOWN
 						System.out.println("DOWN: " + button_down);
 						keyReset();
 						robot.keyEvent(button_down, 1);
+						robot.keyEvent(button_down, 2);
 					}else
-					if(value==90){
+					if(value.compareTo("u")==0){
 						//TURN UP
 						System.out.println("UP: " + button_up);
 						keyReset();
 						robot.keyEvent(button_up, 1);
-					}else
-					if(value==315){
-						//TURN DOWN/RIGHT
-						System.out.println("DOWN/RIGHT");
-						keyReset();
-						robot.keyEvent(button_down, 1);
-						robot.keyEvent(button_right, 1);
-					}else
-					if(value==45){
-						//TURN UP/RIGHT
-						System.out.println("UP/RIGHT");
-						keyReset();
-						//robot.keyEvent(39, 1);
-						robot.keyEvent(button_up, 1);
-						robot.keyEvent(button_right, 1);
-					}else
-					if(value==135){
-						//TURN UP/LEFT
-						System.out.println("UP/LEFT");
-						keyReset();
-						robot.keyEvent(button_up, 1);
-						robot.keyEvent(button_left, 1);
-					}else
-					if(value==225){
-						//TURN down/LEFT
-						System.out.println("DOWN/LEFT");
-						keyReset();
-						robot.keyEvent(button_down, 1);
-						robot.keyEvent(button_left, 1);
-					}	
-					
-				}
-				
+						robot.keyEvent(button_up, 2);
+					}					
 			}else
-			if(event.compareTo("release")==0){
-				if(component.compareTo("jl")==0){
-					keyReset();
-				}
+			if(event.compareTo("tap")==0){
+				robot.keyEvent(button_tap, 1);
+				robot.keyEvent(button_tap, 2);				
+			}else
+			if(event.compareTo("release")==0 && component.compareTo("bOk")==0){
+				robot.keyEvent(button_ok, 1);
+				robot.keyEvent(button_ok, 2);				
+			}else
+			if(event.compareTo("release")==0 && component.compareTo("bCancel")==0){
+				robot.keyEvent(button_back, 1);
+				robot.keyEvent(button_back, 2);				
 			}
-		} catch (JSONException e) {
+			
+			
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -187,6 +179,8 @@ public class MZWidgetSwipe extends MZWidgetHandler{
 		 keyboard.add(new Key(-1, "- Not Defined -"));
 		 keyboard.add(new Key(KeyEvent.VK_SPACE, "SPACE"));
 		 keyboard.add(new Key(KeyEvent.VK_ENTER, "ENTER")); 
+		 keyboard.add(new Key(KeyEvent.VK_DELETE, "DELETE")); 
+		 
 		 keyboard.add(new Key(KeyEvent.VK_ALT, "ALT"));
 		 keyboard.add(new Key(KeyEvent.VK_CONTROL, "CONTROL"));
 		 keyboard.add(new Key(KeyEvent.VK_UP, "UP ARROW"));
@@ -197,32 +191,26 @@ public class MZWidgetSwipe extends MZWidgetHandler{
 		 Key [] keyboardArray = new Key[keyboard.size()];
 		 keyboard.toArray(keyboardArray);
 		 
-		 int s_up, s_down, s_left, s_right, s_a, s_b, s_c, s_d;
-		 if(martelada_counter%2==0){
-			 s_up=KeyEvent.VK_UP;
-			 s_down=KeyEvent.VK_DOWN;
-			 s_left=KeyEvent.VK_LEFT;
-			 s_right=KeyEvent.VK_RIGHT;
-			 s_a=KeyEvent.VK_SPACE;
-			 s_b=KeyEvent.VK_ENTER;
-			 s_c=KeyEvent.VK_CONTROL;
-			 s_d=KeyEvent.VK_ALT;			 
-		 }else{
-			 s_up=KeyEvent.VK_ENTER;
-			 s_down=KeyEvent.VK_ENTER;
-			 s_left=KeyEvent.VK_LEFT;
-			 s_right=KeyEvent.VK_RIGHT;
-			 s_a=KeyEvent.VK_UP;
-			 s_b=KeyEvent.VK_DOWN;
-			 s_c=KeyEvent.VK_N;
-			 s_d=KeyEvent.VK_ESCAPE;
-		 }
+		 int s_up, s_down, s_left, s_right, s_tap, s_bOk, s_bBack;
+		 s_up=KeyEvent.VK_UP;
+		 s_down=KeyEvent.VK_DOWN;
+		 s_left=KeyEvent.VK_LEFT;
+		 s_right=KeyEvent.VK_RIGHT;
+		 s_tap=KeyEvent.VK_SPACE;
+		 s_bOk=KeyEvent.VK_ENTER;
+		 s_bBack=KeyEvent.VK_DELETE;
+		 
 		 
 		 
 		combo_up = createGuiComboKeyItem(panel, "UP", s_up, keyboardArray);
 		combo_down = createGuiComboKeyItem(panel, "DOWN", s_down, keyboardArray);
 		combo_left = createGuiComboKeyItem(panel, "LEFT", s_left, keyboardArray);
 		combo_right = createGuiComboKeyItem(panel, "RIGHT", s_right, keyboardArray);
+		
+		combo_tap = createGuiComboKeyItem(panel, "Tap", s_tap, keyboardArray);
+		combo_bOk = createGuiComboKeyItem(panel, "Ok", s_bOk, keyboardArray);
+		combo_bBack = createGuiComboKeyItem(panel, "Back", s_bBack, keyboardArray);
+				
 		
 		panel.add(new JSeparator());
 		panel.add(new JSeparator());

@@ -1,28 +1,18 @@
 package com.muzzley.pcplugin.handlers;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.muzzley.lib.Participant;
 
-import com.muzzley.pcplugin.Consumer;
-import com.muzzley.pcplugin.MuzzRobot;
-import com.muzzley.pcplugin.layout.components.Key;
-import com.muzzley.sdk.appliance.Participant;
 
 public class MZWidgetDrawpad extends MZWidgetHandler{
 	final String MY_NAME = "drawpad";
@@ -48,29 +38,16 @@ public class MZWidgetDrawpad extends MZWidgetHandler{
 	}
 
 	@Override
-	public void processMessage(JSONObject message) {
+	public void processMessage(Participant.WidgetAction data) {
 		// TODO Auto-generated method stub
 
 		try {			
-			JSONObject data = message.getJSONObject("d");
-			String component = data.getString("c");
-			String event = data.getString("e");
-			JSONObject value = data.getJSONObject("v");
-			
-			//{"h":{"t":5,"pid":2},"a":"signal","d":{"w":"drawpad","c":"touch","e":"touchBegin","v":{"x":0.6008522727272727,"y":0.3338068181818182}}}
-			//System.out.println(pointer);
-			
-			/*{
-				  "w": "drawpad",
-				  "c": "touch",
-				  "e": "touchBegin",
-				  "v": {
-				    "x": 0.1,
-				    "y": 0.2
-				  }
-				}*/
-			Double new_x = value.getDouble("x");
-			Double new_y = value.getDouble("y");
+			String component = (String)data.c;
+			String event = (String) data.e;
+			JsonObject value = new Gson().fromJson(data.v.toString(), JsonObject.class);
+
+			Double new_x = value.get("x").getAsDouble();
+			Double new_y = value.get("y").getAsDouble();
 			
 			if(event.compareTo("touchBegin")==0){
 				robot.mouseMove((int)(new_x*screen_width), (int)(new_y*screen_height));
@@ -164,7 +141,7 @@ public class MZWidgetDrawpad extends MZWidgetHandler{
 					keyReset();
 				}
 			}*/
-		} catch (JSONException e) {
+		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
