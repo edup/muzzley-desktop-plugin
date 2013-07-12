@@ -14,10 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-
-
-import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
+import com.muzzley.pcplugin.layout.LayoutHelper;
+import com.muzzley.pcplugin.layout.components.InputMethodKeyboard;
 import com.muzzley.pcplugin.layout.components.Key;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -26,7 +25,7 @@ import com.muzzley.lib.Participant;
 
 
 public class MZWidgetGamepad extends MZWidgetHandler{
-	final String MY_NAME = "gamepad";
+
 	JComboBox<Key> combo_up;
 	JComboBox<Key> combo_down;
 	JComboBox<Key> combo_left;
@@ -46,15 +45,11 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		super(participant);
 		// TODO Auto-generated constructor stub
 		martelada_counter++;
-		System.out.println("HELLO: I'm in gamepad");
-
 	}
 
 	@Override
 	public void processMessage(Participant.WidgetAction data) {
 		// TODO Auto-generated method stub
-		
-		System.out.println("Processing Message on gamepad");
 		
 		int button_up = ((Key)combo_up.getSelectedItem()).getValue();
 		int button_down = ((Key)combo_down.getSelectedItem()).getValue();
@@ -65,7 +60,6 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		int button_b = ((Key)combo_b.getSelectedItem()).getValue();
 		int button_c = ((Key)combo_c.getSelectedItem()).getValue();
 		int button_d = ((Key)combo_d.getSelectedItem()).getValue();
-		
 		
 		
 		try {			
@@ -201,58 +195,11 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 	
 	public JPanel getWidgetPanel(){
 		
-        JPanel panel = new JPanel() {
-            //Make the panel wider than it really needs, so
-            //the window's wide enough for the tabs to stay
-            //in one row.
-            public Dimension getPreferredSize() {
-                Dimension size = super.getPreferredSize();
-                size.width += 100;
-                return size;
-            }
-        };
+        JPanel panel = LayoutHelper.getJPanel();
         
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        panel.setLayout(new GridLayout(5, 4, 5, 5));
-		
-                 
-		 ArrayList<Key> keyboard = new ArrayList<Key>();
-		 
-		 /*
-		 for(int i=48; i!=58; i++){
-			 char c = (char) i;  
-			 keyboard.add(new Key(i, Character.toString(c)));
-		 }*/
-		 
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD0, Integer.toString(0)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD1, Integer.toString(1)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD2, Integer.toString(2)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD3, Integer.toString(3)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD4, Integer.toString(4)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD5, Integer.toString(5)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD6, Integer.toString(6)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD7, Integer.toString(7)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD8, Integer.toString(8)));
-		 keyboard.add(new Key(KeyEvent.VK_NUMPAD9, Integer.toString(9)));
-		 
-		 for(int i=65; i!=91; i++){
-			 char c = (char) i;  
-			 keyboard.add(new Key(i, Character.toString(c)));
-		 }
-		 
-		 
-		 keyboard.add(new Key(-1, "- Not Defined -"));
-		 keyboard.add(new Key(KeyEvent.VK_SPACE, "SPACE"));
-		 keyboard.add(new Key(KeyEvent.VK_ENTER, "ENTER")); 
-		 keyboard.add(new Key(KeyEvent.VK_ALT, "ALT"));
-		 keyboard.add(new Key(KeyEvent.VK_CONTROL, "CONTROL"));
-		 keyboard.add(new Key(KeyEvent.VK_UP, "UP ARROW"));
-		 keyboard.add(new Key(KeyEvent.VK_DOWN, "DOWN ARROW")); 
-		 keyboard.add(new Key(KeyEvent.VK_LEFT, "LEFT ARROW"));
-		 keyboard.add(new Key(KeyEvent.VK_RIGHT, "RIGHT ARROW"));
-		 
-		 Key [] keyboardArray = new Key[keyboard.size()];
-		 keyboard.toArray(keyboardArray);
+        panel.setLayout(new GridLayout(5, 4, 5, 5));		
+		Key [] keyboardArray = InputMethodKeyboard.getKeyboardArray();
 		 
 		 int s_up, s_down, s_left, s_right, s_a, s_b, s_c, s_d;
 		 if(martelada_counter%2==0){
@@ -276,55 +223,26 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		 }
 		 
 		 
-		combo_up = createGuiComboKeyItem(panel, "UP", s_up, keyboardArray);
-		combo_down = createGuiComboKeyItem(panel, "DOWN", s_down, keyboardArray);
-		combo_left = createGuiComboKeyItem(panel, "LEFT", s_left, keyboardArray);
-		combo_right = createGuiComboKeyItem(panel, "RIGHT", s_right, keyboardArray);
+		combo_up = LayoutHelper.createGuiComboKeyItem(panel, "UP", s_up, keyboardArray);
+		combo_down = LayoutHelper.createGuiComboKeyItem(panel, "DOWN", s_down, keyboardArray);
+		combo_left = LayoutHelper.createGuiComboKeyItem(panel, "LEFT", s_left, keyboardArray);
+		combo_right = LayoutHelper.createGuiComboKeyItem(panel, "RIGHT", s_right, keyboardArray);
 		
 		panel.add(new JSeparator());
 		panel.add(new JSeparator());
 		
-		combo_a = createGuiComboKeyItem(panel, "Button A", s_a, keyboardArray);
-		combo_b = createGuiComboKeyItem(panel, "Button B", s_b, keyboardArray);
-		combo_c = createGuiComboKeyItem(panel, "Button C", s_c, keyboardArray);
-		combo_d = createGuiComboKeyItem(panel, "Button D", s_d, keyboardArray);
+		combo_a = LayoutHelper.createGuiComboKeyItem(panel, "Button A", s_a, keyboardArray);
+		combo_b = LayoutHelper.createGuiComboKeyItem(panel, "Button B", s_b, keyboardArray);
+		combo_c = LayoutHelper.createGuiComboKeyItem(panel, "Button C", s_c, keyboardArray);
+		combo_d = LayoutHelper.createGuiComboKeyItem(panel, "Button D", s_d, keyboardArray);
 		
 		
 		return panel;		
 	}
 	
 	
-	public JComboBox<Key> createGuiComboKeyItem(JPanel main_panel, String label_name, int default_element, Key[] keyboardArray){
-		JPanel element_panel = new JPanel();
-		element_panel.setLayout(new GridLayout(2, 1));
-		JLabel label = new JLabel(label_name);	
-		Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());  
-		 //Set JLabel font using new created font  
-		 label.setFont(newLabelFont);  
-		
-		JComboBox<Key>combo = new JComboBox<Key>(keyboardArray);
-		setComboDefault(combo, default_element);
-		element_panel.add(label);
-		element_panel.add(combo);
-		main_panel.add(element_panel);
-		
-		return combo;
-	}
-	
-			
-	public void setComboDefault(JComboBox combo, int default_key){
-	
-		for(int i=0; i!=combo.getItemCount(); i++){
-			Key key = (Key) combo.getItemAt(i);
-			if(key.getValue()==default_key){
-				combo.setSelectedIndex(i);
-			}
-		}
-	}
 	
 	
-	public Participant getParticipant(){
-		return participant;
-	}
+	
 
 }

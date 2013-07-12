@@ -3,8 +3,6 @@ package com.muzzley.pcplugin.handlers;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -14,17 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import com.muzzley.pcplugin.MuzzleyStateMachine;
-import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.components.Key;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.muzzley.lib.Participant;
 
 
 public class MZWidgetWheel extends MZWidgetHandler{
-	final String MY_NAME = "wheel";
 	JComboBox<Key> combo_up;
 	JComboBox<Key> combo_down;
 	JComboBox<Key> combo_left;

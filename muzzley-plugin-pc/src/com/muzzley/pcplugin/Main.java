@@ -21,7 +21,7 @@ public class Main
             //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");            
             //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
             
-        	System.out.println("Look and feel (OS): " + UIManager.getSystemLookAndFeelClassName());
+        	//System.out.println("Look and feel (OS): " + UIManager.getSystemLookAndFeelClassName());
         	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
             

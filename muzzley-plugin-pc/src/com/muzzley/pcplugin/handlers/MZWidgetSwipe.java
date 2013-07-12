@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.components.Key;
 
@@ -24,7 +23,6 @@ import com.muzzley.lib.Participant;
 
 
 public class MZWidgetSwipe extends MZWidgetHandler{
-	final String MY_NAME = "swipeNavigator";
 	JComboBox<Key> combo_up;
 	JComboBox<Key> combo_down;
 	JComboBox<Key> combo_left;

@@ -1,8 +1,8 @@
 package com.muzzley.pcplugin;
 
-import java.awt.Point;
 import java.awt.Robot;
-import java.io.PrintStream;
+
+import com.muzzley.tools.Keyboard;
 
 
 
@@ -25,16 +25,11 @@ public class MuzzRobot
   public MuzzRobot()
   {
     try {
-      System.out.println("New Robot created...");
       this.robot = new Robot();
       this.keyboard = new Keyboard();
-
-
     }
     catch (Exception e)
     {
-
-
       e.printStackTrace();
     } 
   } 
@@ -175,9 +170,6 @@ public class MuzzRobot
   } 
   
 
-
-
-
   public void mousePress(int button_id)
   {
     int button = 0;
@@ -196,10 +188,6 @@ public class MuzzRobot
     this.robot.mouseRelease(button);
   } 
   
-  public void keyEvent(int code) {
-    System.out.println("Key writing: " + (char)code + "|" + code);
-    //write((char)code);
-  } 
   
   public void keyReset(int key_value){
 	  keyEvent(key_value, 2);

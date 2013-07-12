@@ -69,10 +69,6 @@ public class MainFrame{
 			
 			picLabel.setAlignmentX(card.LEFT_ALIGNMENT);
 			
-			//card.add(Box.createRigidArea(new Dimension(1,0)));
-			//card.add(Box.createHorizontalGlue());
-
-
 		}
 		catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -97,7 +93,6 @@ public class MainFrame{
         card.setLayout(new GridBagLayout());
 		card.setBackground(Color.WHITE);
  
-        
         tabbedPane.addTab(name, card);
         tabs.put(id, card);
 
@@ -124,7 +119,6 @@ public class MainFrame{
         Container a = frame.getContentPane();
         a.setBackground(Color.WHITE);
         
-        
         //Display the window.
         frame.pack();
         frame.setSize(640, 480);
@@ -144,21 +138,12 @@ public class MainFrame{
 			JLabel activityId = new JLabel("Activity: " + mzActivity.id);
 			getMainPanel().add(activityId);
 			
-			
 			//this.mzActivity = mzActivity;
 			BufferedImage qrcode_img = ImageIO.read(new URL(mzActivity.qrCodeUrl));
 			JLabel picLabel = new JLabel(new ImageIcon( qrcode_img ));
 			getMainPanel().add(picLabel);
 			
-			
-			
-			
-			System.out.println(activityId);
-						
 			frame.repaint();
-			System.out.println("Repainted");
-			frame.repaint();
-			System.out.println("Repainted2");
 			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -168,7 +153,7 @@ public class MainFrame{
 			e.printStackTrace();
 		} catch (Exception e){
 			System.out.println("Some exception occurred: " + e.getMessage());
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 		
 	}
@@ -193,10 +178,8 @@ public class MainFrame{
 	}
 	
 	void paintWidgetsList(Participant participant, JPanel participant_panel){		
-
 		//Create the combo box, select item at index 4.
-		//Indices start at 0, so 4 specifies the pig.
-		
+		//Indices start at 0, so 4 specifies the pig.	
 		final Participant current_participant = participant;
 		
 		JComboBox widgets_list = new JComboBox(MZWidgetHandler.WIDGETS);
@@ -208,7 +191,6 @@ public class MainFrame{
 				JComboBox cb = (JComboBox)e.getSource();
 		        String widgetName = (String)cb.getSelectedItem();	        
 		        
-		        System.out.println("Changed: " + widgetName);
 				if(cb.getSelectedIndex()!=0)
 					muzzapp.changeWidget(current_participant, widgetName);
 			}
@@ -266,7 +248,5 @@ public class MainFrame{
 		getParticipantPanel(participant).add(widget_panel, c);		
 		frame.repaint();
 	}	
-		
-	
 	
 }

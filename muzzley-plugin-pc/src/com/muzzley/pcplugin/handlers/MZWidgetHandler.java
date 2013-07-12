@@ -1,22 +1,19 @@
 package com.muzzley.pcplugin.handlers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
 
-
-import com.google.gson.JsonObject;
 import com.muzzley.lib.Participant;
 import com.muzzley.pcplugin.MuzzApp;
-import com.muzzley.pcplugin.MuzzleyStateMachine;
 import com.muzzley.pcplugin.MuzzRobot;
 
 public abstract class MZWidgetHandler {
 	static HashMap<String, MZWidgetHandler> widgets = new HashMap<String, MZWidgetHandler>();
+	public static String[] WIDGETS = { "Change widget...", "gamepad", "drawpad", "switch", "swipeNavigator", "wheel", "keyboard", "tap"};	
 	
 	
-	
-	public static String[] WIDGETS = { "Choose a widget...", "gamepad", "drawpad", "switch", "swipeNavigator", "wheel", "keyboard", "tap"};	
 	public abstract void processMessage(Participant.WidgetAction message);
 	public abstract JPanel getWidgetPanel();
 	
@@ -82,6 +79,9 @@ public abstract class MZWidgetHandler {
 		return widget_object;
 	}
 	
-	
+	public Participant getParticipant(){
+		return participant;
+	}
+
 	
 }
