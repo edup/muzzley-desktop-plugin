@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="libs/java_websocket.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="libs/muzzley-lib-0.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/imgscalr-lib-4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

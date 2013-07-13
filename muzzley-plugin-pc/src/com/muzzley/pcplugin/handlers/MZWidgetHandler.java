@@ -3,21 +3,24 @@ package com.muzzley.pcplugin.handlers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.muzzley.lib.Participant;
 import com.muzzley.pcplugin.MuzzApp;
 import com.muzzley.pcplugin.MuzzRobot;
+import com.muzzley.pcplugin.layout.LayoutHelper;
+import com.muzzley.pcplugin.layout.components.Key;
 
 public abstract class MZWidgetHandler {
 	static HashMap<String, MZWidgetHandler> widgets = new HashMap<String, MZWidgetHandler>();
-	public static String[] WIDGETS = { "Change widget...", "gamepad", "drawpad", "switch", "swipeNavigator", "wheel", "keyboard", "tap"};	
+	public static String[] WIDGETS = { "Change widget...", "gamepad", "drawpad", "swipeNavigator", "image"};	
 	
 	
 	public abstract void processMessage(Participant.WidgetAction message);
 	public abstract JPanel getWidgetPanel();
-	
-	Participant participant;
+		
+	final Participant participant;
 	protected MuzzRobot robot = MuzzApp.getRobot();	
 	
 	public MZWidgetHandler(Participant participant){
@@ -49,27 +52,21 @@ public abstract class MZWidgetHandler {
 		MZWidgetHandler widget_object = null;
 		if(widget_name.compareTo("gamepad")==0){ 
 			widget_object = new MZWidgetGamepad(participant);
-			System.out.println("Created new object");
 		}else
 		if(widget_name.compareTo("wheel")==0){ 
 			widget_object = new MZWidgetWheel(participant);
-			System.out.println("Created new object wheel");
 		}else
 		if(widget_name.compareTo("swipeNavigator")==0){ 
-			widget_object = new MZWidgetSwipe(participant);
-			System.out.println("Created new object swipe");
+			widget_object = new MZWidgetSwipeNavigator(participant);
 		}else
 		if(widget_name.compareTo("drawpad")==0){ 
 			widget_object = new MZWidgetDrawpad(participant);
-			System.out.println("Created new object drawpad");
 		}else
-		if(widget_name.compareTo("drawpad")==0){ 
-			widget_object = new MZWidgetDrawpad(participant);
-			System.out.println("Created new object drawpad");
+		if(widget_name.compareTo("image")==0){ 
+			widget_object = new MZWidgetImage(participant);
 		}else
 		if(widget_name.compareTo("tap")==0){ 
 			widget_object = new MZWidgetTap(participant);
-			System.out.println("Created new object tap");
 		}
 		
 		

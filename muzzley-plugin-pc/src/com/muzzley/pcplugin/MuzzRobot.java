@@ -1,6 +1,8 @@
 package com.muzzley.pcplugin;
 
+import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.image.BufferedImage;
 
 import com.muzzley.tools.Keyboard;
 
@@ -207,4 +209,10 @@ public class MuzzRobot
   private void write(int character, int event_type) {
     this.keyboard.type(character, event_type);
   } 
+  
+  
+  public BufferedImage createScreenCapture(Rectangle screenRect){
+	 return robot.createScreenCapture(screenRect);
+  }
+  
 } 
