@@ -16,10 +16,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.management.modelmbean.DescriptorSupport;
@@ -81,7 +84,8 @@ public class MZWidgetImage extends MZWidgetHandler{
 					BufferedImage img = captureScreen(recordArea);					
 					img = Scalr.resize(img, 1024);
 					
-					//if(last_result!=null && img.)
+					if(compareBufferImages(last_result, img)==true) continue;
+					last_result=img;
 					
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					OutputStream b64 = new Base64.OutputStream(os);
@@ -112,7 +116,6 @@ public class MZWidgetImage extends MZWidgetHandler{
                         }
                     });    	 
 					
-					//last_result = result;					
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -211,10 +214,34 @@ public class MZWidgetImage extends MZWidgetHandler{
 	}
 	
 
-	
-	
-	public Participant getParticipant(){
-		return participant;
+	static public boolean compareBufferImages(BufferedImage img1, BufferedImage img2){
+		
+		if(img1==null && img2==null) return true;
+		if(img1==null || img2==null) return false;
+		
+		
+		DataBuffer dbActual = img1.getRaster().getDataBuffer();
+		DataBuffer dbExpected = img2.getRaster().getDataBuffer();
+		
+		DataBufferInt actualDBAsDBInt = (DataBufferInt) dbActual ;
+		DataBufferInt expectedDBAsDBInt = (DataBufferInt) dbExpected ;
+		
+		int difference_count=0;
+		for (int bank = 0; bank < actualDBAsDBInt.getNumBanks(); bank++) {
+			   int[] actual = actualDBAsDBInt.getData(bank);
+			   int[] expected = expectedDBAsDBInt.getData(bank);
+
+			   // this line may vary depending on your test framework
+			   if(Arrays.equals(actual, expected)==false) difference_count++;
+		}
+		
+		
+		double difference_rate = difference_count/actualDBAsDBInt.getNumBanks();
+		if(difference_rate<=0.03){
+			return true;
+		}		
+		
+		return false;
 	}
 
 }
