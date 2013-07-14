@@ -84,7 +84,7 @@ public class MZWidgetImage extends MZWidgetHandler{
 					BufferedImage img = captureScreen(recordArea);					
 					img = Scalr.resize(img, 1024);
 					
-					if(compareBufferImages(last_result, img)==true) continue;
+					if(bufferedImagesEqual(last_result, img)==true) continue;
 					last_result=img;
 					
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -99,7 +99,6 @@ public class MZWidgetImage extends MZWidgetHandler{
 					obj.addProperty("mode", "center");					
 					JsonElement c = new Content("image", obj).d;
                     
-					System.out.println("Sending...");
 					sendAgain=false;
 					participant.changeWidget("image",  c,
 							new Action<Response>() {
@@ -214,6 +213,7 @@ public class MZWidgetImage extends MZWidgetHandler{
 	}
 	
 
+	/*
 	static public boolean compareBufferImages(BufferedImage img1, BufferedImage img2){
 		
 		if(img1==null && img2==null) return true;
@@ -233,6 +233,7 @@ public class MZWidgetImage extends MZWidgetHandler{
 
 			   // this line may vary depending on your test framework
 			   if(Arrays.equals(actual, expected)==false) difference_count++;
+			  
 		}
 		
 		
@@ -242,6 +243,41 @@ public class MZWidgetImage extends MZWidgetHandler{
 		}		
 		
 		return false;
+	}*/
+	
+	boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
+		
+		if(img1==null && img2==null) return true;
+		if(img1==null || img2==null) return false;
+		
+		
+		float difference_count=0;
+		float total_count=0;
+		if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight() ) {
+		    for (int x = 0; x < img1.getWidth(); x++) {
+		      for (int y = 0; y < img1.getHeight(); y++) {
+		        if (img1.getRGB(x, y) != img2.getRGB(x, y) ) difference_count++;
+		        total_count++;
+		      }
+		     }
+		}else {
+		    return false;
+		}
+		
+		if(difference_count==0) return true;
+		
+		//System.out.println("Diferent: " + difference_count+"/"+total_count);
+		float difference_rate = difference_count/total_count;
+		//System.out.println("Different rate: " + (difference_rate));
+		
+		if(difference_rate<=0.015){
+			return true;
+		}
+ 
+		 
+		return false;
 	}
+	
+	
 
 }
