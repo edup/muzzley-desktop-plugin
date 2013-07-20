@@ -77,6 +77,12 @@ public class MZWidgetTap extends MZWidgetHandler{
 		
 		return panel;		
 	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 

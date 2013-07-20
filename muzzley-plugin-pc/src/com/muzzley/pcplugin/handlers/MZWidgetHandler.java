@@ -7,6 +7,8 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.muzzley.lib.Participant;
+import com.muzzley.lib.commons.Action;
+import com.muzzley.lib.commons.Response;
 import com.muzzley.pcplugin.MuzzApp;
 import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.LayoutHelper;
@@ -18,6 +20,7 @@ public abstract class MZWidgetHandler {
 	
 	
 	public abstract void processMessage(Participant.WidgetAction message);
+	public abstract void destroy();
 	public abstract JPanel getWidgetPanel();
 		
 	final Participant participant;
@@ -67,11 +70,28 @@ public abstract class MZWidgetHandler {
 		}else
 		if(widget_name.compareTo("tap")==0){ 
 			widget_object = new MZWidgetTap(participant);
-		}
-		
+		}else
+			return null;
 		
 		
 		widgets.put(participant.id, widget_object);
+		
+		participant.changeWidget(widget_name,  null,
+				new Action<Response>() {
+            @Override
+            public void invoke(Response r) {
+           
+            }
+        },
+        new Action<Exception>() {
+            @Override
+            public void invoke(Exception e) {
+           
+                e.printStackTrace();
+                return;
+            }
+        });
+		
 		
 		return widget_object;
 	}
@@ -79,6 +99,6 @@ public abstract class MZWidgetHandler {
 	public Participant getParticipant(){
 		return participant;
 	}
-
+	
 	
 }

@@ -343,4 +343,11 @@ public class MZWidgetWheel extends MZWidgetHandler{
 		
 	}
 
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

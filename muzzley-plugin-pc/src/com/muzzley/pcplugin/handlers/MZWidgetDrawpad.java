@@ -99,4 +99,10 @@ public class MZWidgetDrawpad extends MZWidgetHandler{
 		return participant;
 	}
 
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -33,11 +33,11 @@ public class LayoutHelper {
             //in one row.
             public Dimension getPreferredSize() {
                 Dimension size = super.getPreferredSize();
-                size.width += 100;
+                
                 return size;
             }
         };
-		
+        panel.setBackground(Color.WHITE);
         setConfigurationPanel(panel, conf);
         
 		return panel;
@@ -58,7 +58,8 @@ public class LayoutHelper {
 		break;
 		case 1: //REPLACE BY CONSTS
 			//panel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-	        panel.setLayout(new GridLayout(1, 2, 2, 2));
+	        //panel.setLayout(new GridLayout(1, 1));
+	        panel.setLayout(new FlowLayout());
 		break;
 		case 2: //REPLACE BY CONSTS
 			//panel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -70,9 +71,11 @@ public class LayoutHelper {
 	
 	static public JComboBox<Key> createGuiComboKeyItem(JPanel main_panel, String label_name, int default_element, Key[] keyboardArray){
 		JPanel element_panel = new JPanel();
+		element_panel.setBackground(Color.WHITE);
 		
 		element_panel.setLayout(new GridLayout(2, 1));
 		JLabel label = new JLabel(label_name);	
+		
 		Font newLabelFont=new Font(label.getFont().getName(),Font.BOLD,label.getFont().getSize());  
 		 //Set JLabel font using new created font  
 		 label.setFont(newLabelFont);  

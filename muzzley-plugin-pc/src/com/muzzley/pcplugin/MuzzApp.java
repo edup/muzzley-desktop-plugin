@@ -28,7 +28,6 @@ public class MuzzApp {
                 System.out.println("  Id: " + activity.id + ", QR code URL: " + activity.qrCodeUrl);
                 uix.setActivity(activity);
                 
-                
                 activity.onParticipant.add(new Action<Participant>() {
                     @Override
                     public void invoke(final Participant participant) {
@@ -60,8 +59,6 @@ public class MuzzApp {
                             }
                         });
                         
-                        changeWidget(participant, "swipeNavigator");
-                        
                         participant.onQuit.add(new Action<Void>() {
                             @Override
                             public void invoke(Void t) {
@@ -90,26 +87,13 @@ public class MuzzApp {
     }
     
     
-    public void changeWidget(Participant participant, final String widget_name){
-    	 final Participant current_participant = participant;
-   	  	 
-    	 participant.changeWidget(widget_name, new Action<Response>() {
-                            @Override
-                            public void invoke(Response r) {
-                                MZWidgetHandler widget_object = MZWidgetHandler.onWidgetChanged(current_participant, widget_name);               
-                   				if(widget_object!=null){
-                   					uix.setWidgetPanel(current_participant, widget_object.getWidgetPanel());						
-                   				}else{
-                   					System.out.println("This widget is not implemented yet: " + widget_name);
-                   				}
-                            }
-                        },
-                        new Action<Exception>() {
-                            @Override
-                            public void invoke(Exception e) {
-                                e.printStackTrace();
-                            }
-                        });    	 
+    public void changeWidget(Participant participant, final String widget_name, Action<Response> listener_response, Action<Exception> listener_error){
+    	try{ 	
+    		participant.changeWidget(widget_name, listener_response, listener_error);
+    	}catch(Exception e){
+    		listener_response.invoke(null);
+    		e.printStackTrace();
+    	}
     }
     
     public static MuzzRobot getRobot(){

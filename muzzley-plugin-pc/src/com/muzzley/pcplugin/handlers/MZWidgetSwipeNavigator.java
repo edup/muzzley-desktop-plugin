@@ -188,6 +188,12 @@ public class MZWidgetSwipeNavigator extends MZWidgetHandler{
 		
 		return main_panel;
 	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

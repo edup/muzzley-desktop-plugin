@@ -18,90 +18,53 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.muzzley.lib.Activity;
 import com.muzzley.lib.Participant;
+import com.muzzley.lib.commons.Action;
+import com.muzzley.lib.commons.Response;
 import com.muzzley.pcplugin.Consts;
 import com.muzzley.pcplugin.MuzzApp;
 import com.muzzley.pcplugin.handlers.MZWidgetHandler;
+import com.muzzley.pcplugin.layout.UsersPanel.UserSelectedEvent;
+import com.muzzley.pcplugin.layout.screens.ScreenPair;
 
-public class MainFrame{
+public class MainFrame extends JFrame{
 	MuzzApp muzzapp;
-	final static int extraWindowWidth = 100;
+	
+	JPanel main_panel;
+	
+	JPanel desktopPanel;
+	UsersPanel usersPanel;
+	
+	ScreenPair screenPair;
+	
+	JPanel options_panel;
+	
+	JPanel participant_panel;
+	JComboBox widgets_list;
 	
 	// Create a constructor method
 	public MainFrame(){
 	  super();
 	  //consumer = new MuzzleyStateMachine(this);
-	  muzzapp = new MuzzApp("41f59b4f660cf28b", this);	  	
+	  muzzapp = new MuzzApp("41f59b4f660cf28b", this);
+	  createAndShowGUI();
 	}
 	
-	
-	HashMap<String, JPanel> tabs = new HashMap<String, JPanel>();	
-	JTabbedPane tabbedPane;
-	public void addComponentToPane(Container pane) {
-        
-		tabbedPane = new JTabbedPane(); 
-		//Create the "cards".
-        JPanel card = new JPanel() {
-            //Make the panel wider than it really needs, so
-            //the window's wide enough for the tabs to stay
-            //in one row.
-            public Dimension getPreferredSize() {
-                Dimension size = super.getPreferredSize();
-                size.width += extraWindowWidth;
-                return size;
-            }
-        };
-        card.setBackground(Color.WHITE);
-        card.setLayout(new BoxLayout(card, BoxLayout.PAGE_AXIS));
-        
-        
-        BufferedImage qrcode_img;
-		try {
-			qrcode_img = ImageIO.read(new URL(Consts.URL_LOGO));
-			JLabel picLabel = new JLabel(new ImageIcon( qrcode_img ));
-			card.add(picLabel, BorderLayout.EAST);
-			
-			picLabel.setAlignmentX(card.LEFT_ALIGNMENT);
-			
-		}
-		catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println();
-		}
-		
-		
-        tabbedPane.addTab("Main", card);
-        tabs.put("0", card);             
-        pane.add(tabbedPane, BorderLayout.CENTER);
-        
-        
-        
+	@Override
+	public Dimension getPreferredSize() {
+        Dimension size = super.getPreferredSize();
+        return size;
     }
-	
-	private JPanel getNewTab(String id, String name){
-		//Create the "cards".
-        JPanel card = new JPanel();        
-        card.setLayout(new GridBagLayout());
-		card.setBackground(Color.WHITE);
- 
-        tabbedPane.addTab(name, card);
-        tabs.put(id, card);
-
-        return card;
-	} 
-	
 	
 	
 	/**
@@ -109,147 +72,211 @@ public class MainFrame{
      * this method should be invoked from the
      * event dispatch thread.
      */
-	static JFrame frame;
-    public static void createAndShowGUI() {
+	JScrollPane usersScrollPanel;
+    public void createAndShowGUI(){
         //Create and set up the window.
-        frame = new JFrame("Muzzley plugin - You Control!");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        this.setTitle("Muzzley plugin - You Control!");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        this.setLayout(new BorderLayout());
+        this.setResizable(true);
         
-        //Create and set up the content pane.
-        MainFrame demo = new MainFrame();
-        demo.addComponentToPane(frame.getContentPane());
-         
-        Container a = frame.getContentPane();
-        a.setBackground(Color.WHITE);
+        //Main Panel
+        main_panel = new JPanel();
+        setContentPane(main_panel);
+        main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.X_AXIS));
+        main_panel.setBackground(Color.WHITE);
+       
+        //Desktop Panel
+        desktopPanel = new DesktopPanel(0.7f, 1f);
+        //desktopPanel.setLayout(new VerticalLayout());
+        //desktopPanel = new JPanel();
+        desktopPanel.setLayout(new VerticalLayout());
         
-        //Display the window.
-        frame.pack();
-        frame.setSize(640, 480);
-        frame.setVisible(true);
+        main_panel.add(desktopPanel);
+        
+        //Screen Pair
+        screenPair = new ScreenPair();
+        desktopPanel.add(screenPair);
+        //USERS PANEL
+
+        final JViewport viewport = new JViewport();
+        viewport.setBackground(Color.WHITE);
+        
+        usersScrollPanel= new JScrollPane();
+        usersScrollPanel.setViewportView(viewport);
+        viewport.setLayout(new FlowLayout());
+        viewport.setAlignmentX(CENTER_ALIGNMENT);
+        
+        
+        usersPanel = new UsersPanel();
+        viewport.add(usersPanel);
+        
+        main_panel.add(usersScrollPanel);        		
+        usersScrollPanel.getViewport().setBackground(Color.red);
+        
+        this.pack();
+        this.setSize(640, 600);
+        this.setVisible(true);
+        
+        //TEST
+        
+        /*
+        for(int i=0; i!=3; i++){
+	        Participant p = new Participant("aaaa" + i, "João Esteves", "http://t0.gstatic.com/images?q=tbn:ANd9GcRFVOeQLz546EdScOrhdsLBGkS-AYiXAA75Bv8_qxnLirW2vVCyeA", null);
+	        usersPanel.addParticipant(p);
+        }*/
+        
+        
+        options_panel=new JPanel();
+        options_panel.setLayout(new FlowLayout());
+        desktopPanel.add(options_panel);
+        paintWidgetsList();
+   
+        participant_panel=new JPanel();
+        participant_panel.setLayout(new FlowLayout());
+        desktopPanel.add(participant_panel);
+        
+        
+        desktopPanel.setBackground(Color.WHITE);
+        options_panel.setBackground(Color.WHITE);
+        screenPair.setBackground(Color.WHITE);
+        
+        
+        
+        //ADD LISTENERS
+        usersPanel.addUserSelectedListener(new UsersPanel.UserSelectedListener() {
+			
+			@Override
+			public void onUnfocus(UsersPanel.UserSelectedEvent e) {
+				// TODO Auto-generated method stub
+				UserPanel panel = (UserPanel)e.getSource();
+				JPanel panel_to_remove = panel.getWidgetPanel();
+				
+				if(panel_to_remove!=null)
+					participant_panel.remove(panel_to_remove);
+			}
+			
+			@Override
+			public void onFocus(UsersPanel.UserSelectedEvent e) {
+				// TODO Auto-generated method stub
+				UserPanel panel = (UserPanel)e.getSource();
+				setWidgetPanel(panel.getWidgetPanel());
+			}
+			
+			@Override
+			public void onMultipleFocus() {
+				// TODO Auto-generated method stub
+				JPanel multipleMessagePanel = new JPanel();
+				multipleMessagePanel.setLayout(new FlowLayout());
+				JLabel label = new JLabel("Multiple users selected. If you want to see user option menu select only one user!");
+				multipleMessagePanel.add(label);
+				
+				setWidgetPanel(multipleMessagePanel);
+			}
+
+			@Override
+			public void onOneUserLeft(UserSelectedEvent e) {
+				// TODO Auto-generated method stub
+				UserPanel panel = (UserPanel)e.getSource();
+				setWidgetPanel(panel.getWidgetPanel());
+			}
+
+			@Override
+			public void onNoUserLeft() {
+				// TODO Auto-generated method stub
+				setWidgetPanel(null);
+			}
+		});
     }
 	
-	JPanel getMainPanel(){ 
-		return tabs.get("0");
-	}
-	
-	JPanel getParticipantPanel(Participant participant){ 
-		return tabs.get(participant.id);
-	}
-	
 	public void setActivity(Activity mzActivity){		
-		try {
-			JLabel activityId = new JLabel("Activity: " + mzActivity.id);
-			getMainPanel().add(activityId);
-			
-			//this.mzActivity = mzActivity;
-			BufferedImage qrcode_img = ImageIO.read(new URL(mzActivity.qrCodeUrl));
-			JLabel picLabel = new JLabel(new ImageIcon( qrcode_img ));
-			getMainPanel().add(picLabel);
-			
-			frame.repaint();
-			
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e){
-			System.out.println("Some exception occurred: " + e.getMessage());
-			e.printStackTrace(); 
-		}
-		
+		screenPair.setActivity(mzActivity);
 	}
 	
 	
 	public void onParticipant(Participant participant) {
-		JPanel participant_panel = getNewTab(participant.id, participant.name);
-		paintWidgetsList(participant, participant_panel);
+		usersPanel.addParticipant(participant);
+		        	
+		if(usersPanel.getSelectedParticipants().size()==0){
+			JPanel messagePanel = new JPanel();
+			messagePanel.setLayout(new FlowLayout());
+			JLabel label = new JLabel("Click on a user on the right bar to start interact");
+			messagePanel.add(label);
+			setWidgetPanel(messagePanel);
+		}
 		
-		try{
-			//TODO: MARTELO
-			tabbedPane.setSelectedComponent(participant_panel);
-		}catch(Exception e){}
+		String widgetName = (String)widgets_list.getSelectedItem();
+		if(widgets_list.getSelectedIndex()!=0){
+			UserPanel userPanel = usersPanel.getUserPanel(participant);
+			userPanel.onWidgetChanged(widgetName);
+			usersPanel.triggerClickEventOnSelected(userPanel);
+		}
+		
+		validate();
+		repaint();
 	}
 	
 	public void onParticipantQuit(Participant participant) {
-		JPanel pane = tabs.remove(participant.id);
-		try{
-			//TODO: MARTELO
-			tabbedPane.remove(pane);
-		}catch(Exception e){}
+		UserPanel userPanel = usersPanel.removeParticipant(participant);
+		usersPanel.validate();
+		usersScrollPanel.validate();
 	}
 	
-	void paintWidgetsList(Participant participant, JPanel participant_panel){		
-		//Create the combo box, select item at index 4.
-		//Indices start at 0, so 4 specifies the pig.	
-		final Participant current_participant = participant;
-		
-		JComboBox widgets_list = new JComboBox(MZWidgetHandler.WIDGETS);
+	
+	void paintWidgetsList(){
+		widgets_list = new JComboBox(MZWidgetHandler.WIDGETS);
 		widgets_list.setSelectedIndex(0);
-		widgets_list.addActionListener( new ActionListener() {
+		
+		
+		JButton button = new JButton("Change widget");
+		
+		button.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub				
-				JComboBox cb = (JComboBox)e.getSource();
-		        String widgetName = (String)cb.getSelectedItem();	        
+				JComboBox cb = widgets_list;
+		        final String widgetName = (String)cb.getSelectedItem();	        
 		        
-				if(cb.getSelectedIndex()!=0)
-					muzzapp.changeWidget(current_participant, widgetName);
+		        ArrayList<UserPanel> participants=usersPanel.getSelectedParticipants();
+		        
+		        if(participants.size()==0){
+		        	//widgets_list.setSelectedIndex(0);
+		        	JOptionPane.showMessageDialog(null, "Please select at least one Participant on the right side");
+		        }else{
+		        	for(int i=0; i!=participants.size(); i++){
+		        		final UserPanel userPanel = participants.get(i);
+		        		final Participant participant = userPanel.getParticipant();
+		        		userPanel.onWidgetChanged(widgetName);		        		
+		        	}
+		        	
+		        	usersPanel.triggerClickEventOnSelected();
+		        }
+				
 			}
 		});
 		
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 0.5;
-		c.gridx = 0;
-	    c.gridy = 0;
-	    participant_panel.add(paintPhoto(participant), c);
 		
-	    c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 1;
-	    c.gridy = 0;
-		participant_panel.add(widgets_list, c);
+	    options_panel.add(widgets_list);
+	    options_panel.add(button);
 		
-		frame.repaint();
-	}
-
-	public JPanel paintPhoto(Participant participant){
-		try {
-			JPanel panel= new JPanel();
-			panel.setBackground(Color.WHITE);
-			BufferedImage img = ImageIO.read(new URL(participant.photoUrl));
-			
-			JLabel picLabel = new JLabel(new ImageIcon( img.getScaledInstance(120, 100, Image.SCALE_SMOOTH) ));
-			panel.add(picLabel);
-			return panel;
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		return null;
+		desktopPanel.repaint();
 	}
 	
 	
-	public void setWidgetPanel(Participant participant, JPanel widget_panel){		
-		getParticipantPanel(participant).removeAll();
+	public void setWidgetPanel(JPanel widget_panel){
+		participant_panel.removeAll();
+		participant_panel.validate();
+		desktopPanel.validate();
+		
+		if(widget_panel==null) return ;
+		
+		//widgets_list.setSelectedIndex(0);
 		widget_panel.setBackground(Color.WHITE);
+	    participant_panel.add(widget_panel);
 		
-		paintWidgetsList(participant, getParticipantPanel(participant));
-		getParticipantPanel(participant).remove(widget_panel);
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1;
-		c.gridx = 1;
-	    c.gridy = 1;
-		
-		getParticipantPanel(participant).add(widget_panel, c);		
-		frame.repaint();
+		participant_panel.validate();
+		desktopPanel.validate();
 	}	
 	
 }

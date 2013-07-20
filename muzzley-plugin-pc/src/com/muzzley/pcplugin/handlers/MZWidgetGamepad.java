@@ -204,8 +204,10 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 	}
 	
 	
+	
 	public JPanel getWidgetPanel(){
-        JPanel main_panel = LayoutHelper.getJPanel(1);        
+		JPanel main_panel;
+		main_panel = LayoutHelper.getJPanel(1);        
         
         //TEMPLATE PANEL
         JPanel template_panel = LayoutHelper.getJPanel(2);    
@@ -217,8 +219,8 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		        int index = ((JComboBox)e.getSource()).getSelectedIndex();	        
 		        
 		        ArrayList<Key> templateMap = TEMPLATE_MAP.get(index);		
-		        LayoutHelper.setComboDefault(combo_up, templateMap.get(0).getValue());
-		        LayoutHelper.setComboDefault(combo_down, templateMap.get(1).getValue());
+		        LayoutHelper.setComboDefault(combo_down, templateMap.get(0).getValue());
+		        LayoutHelper.setComboDefault(combo_up, templateMap.get(1).getValue());
 		        LayoutHelper.setComboDefault(combo_left, templateMap.get(2).getValue());
 		        LayoutHelper.setComboDefault(combo_right, templateMap.get(3).getValue());
 		        LayoutHelper.setComboDefault(combo_a, templateMap.get(4).getValue());
@@ -255,6 +257,12 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		
 		
 		return main_panel;		
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

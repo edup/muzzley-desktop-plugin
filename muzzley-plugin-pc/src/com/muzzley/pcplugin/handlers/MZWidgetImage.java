@@ -1,47 +1,36 @@
 package com.muzzley.pcplugin.handlers;
 
-import java.awt.AWTException;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Point;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Rectangle;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
-import javax.management.modelmbean.DescriptorSupport;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 
 import org.imgscalr.Scalr;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.util.Base64;
 
-
-import com.muzzley.pcplugin.MuzzRobot;
-import com.muzzley.pcplugin.layout.components.Key;
-import com.muzzley.pcplugin.layout.components.screenrecorder.DesktopScreenRecorder;
-import com.muzzley.pcplugin.layout.components.screenrecorder.ScreenRecorder;
-
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -49,108 +38,79 @@ import com.muzzley.lib.Participant;
 import com.muzzley.lib.commons.Action;
 import com.muzzley.lib.commons.Content;
 import com.muzzley.lib.commons.Response;
+import com.muzzley.pcplugin.MuzzRobot;
+import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent;
+import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent.ImageReadyOnServerEvent;
+import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent.ImageReadyOnServerListener;
 
 public class MZWidgetImage extends MZWidgetHandler{
-	public static boolean streaming = false;
+	
+	ScreenCapturerAgent screen_agent;
+	private boolean streaming = false;
+	boolean can_send_again_to_client=false;
+	
+	static int n_instances=0;
+	
+	ImageReadyOnServerListener image_ready_listener = new ImageReadyOnServerListener() {
+		@Override
+		public void onImageReady(ImageReadyOnServerEvent e) {
+			// TODO Auto-generated method stub
+			
+			if(streaming==false || can_send_again_to_client==false) return;
+			
+			String result = (String) e.getSource();
+			
+			JsonObject obj = new JsonObject();
+			obj.addProperty("src", result);
+			obj.addProperty("orientation", "landscape");
+			obj.addProperty("mode", "center");					
+			JsonElement c = new Content("image", obj).d;
+            
+			can_send_again_to_client=false;
+			participant.changeWidget("image",  c,
+					new Action<Response>() {
+                @Override
+                public void invoke(Response r) {
+                	can_send_again_to_client=true;
+                }
+            },
+            new Action<Exception>() {
+                @Override
+                public void invoke(Exception e) {
+                	can_send_again_to_client=true;
+                    e.printStackTrace();
+                    return;
+                }
+            });
+			
+		}
+	};  
 	
 	public MZWidgetImage(Participant participant) {
 		super(participant);
 		// TODO Auto-generated constructor stub
-		
+		n_instances++;
 	}
 	
 	private void streamNow(boolean stream){
 		if(!stream){
-			streaming = false;	
+			streaming = false;
+			if(screen_agent!=null){
+				screen_agent.removeImageReadyOnServerListener(image_ready_listener);
+				if(n_instances==0)
+					screen_agent.destroy();
+			}
+			
+			screen_agent=null;
 		}else{
 			streaming = true;
-			new Thread (new ImageStreamer()).start();
+			can_send_again_to_client=true;
+			screen_agent = ScreenCapturerAgent.getInstance();
+			screen_agent.addImageReadyOnServerListener(image_ready_listener);
 		}
 	}
 	
-	class ImageStreamer implements Runnable {
-		BufferedImage last_result = null;
-		boolean sendAgain = true;
-		
-		@Override
-		public void run() {
-			Rectangle recordArea = initialiseScreenCapture();
-			while(true){
-				if(!streaming) return;
-				try {
-					Thread.sleep(100);
-					if(!sendAgain) continue;
-
-					BufferedImage img = captureScreen(recordArea);					
-					img = Scalr.resize(img, 1024);
-					
-					if(bufferedImagesEqual(last_result, img)==true) continue;
-					last_result=img;
-					
-					ByteArrayOutputStream os = new ByteArrayOutputStream();
-					OutputStream b64 = new Base64.OutputStream(os);
-					ImageIO.write(img, "jpg", b64);
-					String result = "data:image/gif;base64," + os.toString("UTF-8");					
-		
-					
-					JsonObject obj = new JsonObject();
-					obj.addProperty("src", result);
-					obj.addProperty("orientation", "landscape");
-					obj.addProperty("mode", "center");					
-					JsonElement c = new Content("image", obj).d;
-                    
-					sendAgain=false;
-					participant.changeWidget("image",  c,
-							new Action<Response>() {
-                        @Override
-                        public void invoke(Response r) {
-                        	sendAgain=true;
-                        }
-                    },
-                    new Action<Exception>() {
-                        @Override
-                        public void invoke(Exception e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                    });    	 
-					
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch(Exception e){
-					e.printStackTrace();
-				}
-				
-			}			
-
-			
-			//participant.send(new Content("image", d));
-		}
-
-		public Rectangle initialiseScreenCapture() {	  
-	      return new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-	   }
-
-		public BufferedImage captureScreen(Rectangle recordArea) {
-			// TODO Auto-generated method stub
-			BufferedImage image = robot.createScreenCapture(recordArea);
-
-		      //Graphics2D grfx = image.createGraphics();
-		      //grfx.drawImage(mouseCursor, mousePosition.x - 8, mousePosition.y - 5,
-		      //      null);
-		      //grfx.dispose();
-
-		      return image;
-		}
-		
-		
-	}
 	
-
 	@Override
 	public void processMessage(Participant.WidgetAction data) {
 		// TODO Auto-generated method stub
@@ -169,24 +129,16 @@ public class MZWidgetImage extends MZWidgetHandler{
 	
 	
 	public JPanel getWidgetPanel(){
-        JPanel panel = new JPanel() {
-            //Make the panel wider than it really needs, so
-            //the window's wide enough for the tabs to stay
-            //in one row.
-            public Dimension getPreferredSize() {
-                Dimension size = super.getPreferredSize();
-                size.width += 100;
-                return size;
-            }
-        };
+        JPanel panel = new JPanel();
         
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         //panel.setLayout(new GridLayout(5, 4, 5, 5));
-        panel.setLayout(new FlowLayout());
+        panel.setLayout(new GridBagLayout());
 
+        final JCheckBox streamButton = new JCheckBox("Stream to url http://share.lab.muzzley.com");
+        streamButton.setSelected(true);
+        streamNow(true);
         
-        final JCheckBox streamButton = new JCheckBox("Stream to url http://goo.gl/NYjQF");
-        streamButton.setSelected(false);
         //Register a listener for the check boxes.
         streamButton.addItemListener(new ItemListener(){
 
@@ -204,10 +156,71 @@ public class MZWidgetImage extends MZWidgetHandler{
 			}
         	
         });
+                
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(new JLabel("Stream image height:"), c);
+        c.gridx = 1;
+        c.gridy = 0;
         
-        panel.add(streamButton);
-		panel.add(new JSeparator());
-		panel.add(new JSeparator());
+        final JTextField textfield_default_height = new JTextField(new Integer(ScreenCapturerAgent.CAPTURE_DEFAULT_HEIGHT).toString());
+        textfield_default_height.setSize(100, 30);
+        panel.add(textfield_default_height, c);
+        
+        c.gridx = 0;
+        c.gridy = 1;
+        panel.add(new JLabel("Stream only with different rate >= "), c);
+        c.gridx = 1;
+        c.gridy = 1;
+        final JTextField textfield_stream_rate = new JTextField(new Float(ScreenCapturerAgent.DEFAULT_DIFFERENCE_RATE).toString());
+        panel.add(textfield_stream_rate, c);        
+        
+        c.gridx = 0;
+        c.gridy = 2;
+        panel.add(new JLabel("Stream seconds period"), c);
+        c.gridx = 1;
+        c.gridy = 2;
+        final JTextField textfield_stream_period = new JTextField(new Float(MuzzRobot.MIN_TIME_TO_CAPTURE_SCREEN/1000).toString());
+        panel.add(textfield_stream_period, c);        
+        
+        
+        
+        c.gridx = 1;
+        c.gridy = 3;
+        JButton bupdate = new JButton("Update");
+        panel.add(bupdate, c);        
+
+        bupdate.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try{
+					ScreenCapturerAgent.CAPTURE_DEFAULT_HEIGHT = Integer.parseInt(textfield_default_height.getText());
+					ScreenCapturerAgent.DEFAULT_DIFFERENCE_RATE = Float.parseFloat(textfield_stream_rate.getText());
+					MuzzRobot.MIN_TIME_TO_CAPTURE_SCREEN = Math.round(Float.parseFloat(textfield_stream_period.getText())*1000);
+				}catch(Exception exp){
+					exp.printStackTrace();
+				}
+			}
+		});
+        
+        
+        c.gridx = 0;
+        c.gridy = 4;
+        c.weightx = 0.0;
+        c.gridwidth = 2;
+        panel.add(streamButton, c);
+
+        
+        panel.add(new JSeparator());
+        panel.add(new JSeparator());
+		
+        
+        
+        //panel.add(streamButton);
+		//panel.add(new JSeparator());
 		
 		return panel;		
 	}
@@ -245,37 +258,12 @@ public class MZWidgetImage extends MZWidgetHandler{
 		return false;
 	}*/
 	
-	boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
-		
-		if(img1==null && img2==null) return true;
-		if(img1==null || img2==null) return false;
-		
-		
-		float difference_count=0;
-		float total_count=0;
-		if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight() ) {
-		    for (int x = 0; x < img1.getWidth(); x++) {
-		      for (int y = 0; y < img1.getHeight(); y++) {
-		        if (img1.getRGB(x, y) != img2.getRGB(x, y) ) difference_count++;
-		        total_count++;
-		      }
-		     }
-		}else {
-		    return false;
-		}
-		
-		if(difference_count==0) return true;
-		
-		//System.out.println("Diferent: " + difference_count+"/"+total_count);
-		float difference_rate = difference_count/total_count;
-		//System.out.println("Different rate: " + (difference_rate));
-		
-		if(difference_rate<=0.015){
-			return true;
-		}
- 
-		 
-		return false;
+	
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		n_instances--;
+		streamNow(false);
 	}
 	
 	
