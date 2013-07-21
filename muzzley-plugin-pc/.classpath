@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="libs/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="libs/muzzley-lib-0.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/imgscalr-lib-4.2.jar"/>
-	<classpathentry kind="lib" path="libs/guava-14.0.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

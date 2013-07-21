@@ -62,9 +62,6 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		conf2.add(new Key(KeyEvent.VK_N, "c"));
 		conf2.add(new Key(KeyEvent.VK_ESCAPE, "d"));
 		TEMPLATE_MAP.add(conf2);		
-
-        System.out.println(TEMPLATE_MAP.size() + ", " + TEMPLATE_MAP.toString());
-
 	}
 	
 
@@ -94,7 +91,6 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 			if(event.compareTo("press")==0){
 				if(component.compareTo("jl")==0){
 					int value = Integer.parseInt(data.v.toString());
-					System.out.println("Value: " + value);
 					int key=0;
 					if(value==0){
 						//TURN RIGHT

@@ -160,36 +160,36 @@ public class MZWidgetImage extends MZWidgetHandler{
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
-        panel.add(new JLabel("Stream image height:"), c);
+        //panel.add(new JLabel("Stream image height:"), c);
         c.gridx = 1;
         c.gridy = 0;
         
         final JTextField textfield_default_height = new JTextField(new Integer(ScreenCapturerAgent.CAPTURE_DEFAULT_HEIGHT).toString());
         textfield_default_height.setSize(100, 30);
-        panel.add(textfield_default_height, c);
+        //panel.add(textfield_default_height, c);
         
         c.gridx = 0;
         c.gridy = 1;
-        panel.add(new JLabel("Stream only with different rate >= "), c);
+        //panel.add(new JLabel("Stream only with different rate >= "), c);
         c.gridx = 1;
         c.gridy = 1;
         final JTextField textfield_stream_rate = new JTextField(new Float(ScreenCapturerAgent.DEFAULT_DIFFERENCE_RATE).toString());
-        panel.add(textfield_stream_rate, c);        
+        //panel.add(textfield_stream_rate, c);        
         
         c.gridx = 0;
         c.gridy = 2;
-        panel.add(new JLabel("Stream seconds period"), c);
+        //panel.add(new JLabel("Stream seconds period"), c);
         c.gridx = 1;
         c.gridy = 2;
         final JTextField textfield_stream_period = new JTextField(new Float(MuzzRobot.MIN_TIME_TO_CAPTURE_SCREEN/1000).toString());
-        panel.add(textfield_stream_period, c);        
+        //panel.add(textfield_stream_period, c);        
         
         
         
         c.gridx = 1;
         c.gridy = 3;
         JButton bupdate = new JButton("Update");
-        panel.add(bupdate, c);        
+        //panel.add(bupdate, c);        
 
         bupdate.addActionListener(new ActionListener() {
 			
@@ -214,8 +214,8 @@ public class MZWidgetImage extends MZWidgetHandler{
         panel.add(streamButton, c);
 
         
-        panel.add(new JSeparator());
-        panel.add(new JSeparator());
+        //panel.add(new JSeparator());
+        //panel.add(new JSeparator());
 		
         
         

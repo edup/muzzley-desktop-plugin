@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -26,7 +27,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	private MuzzRobot robot = new MuzzRobot();
 	
 	static private ScreenCapturerAgent single_instance;
-	static final String IMAGE_SERVER_ADDRESS="ws://localhost:9999/";
+	static final String IMAGE_SERVER_ADDRESS="ws://sandbox-lx01.lab.muzzley.com:9999/";
 	public static int CAPTURE_DEFAULT_HEIGHT=1024;
 	public static float DEFAULT_DIFFERENCE_RATE=0.015f;
 	
@@ -61,7 +62,6 @@ public class ScreenCapturerAgent extends WebSocketClient{
 			e.printStackTrace();
 		}
 	}
-	
 	
 	//Class that manages the capture of the screen
 	class ScreenCapture implements Runnable{
