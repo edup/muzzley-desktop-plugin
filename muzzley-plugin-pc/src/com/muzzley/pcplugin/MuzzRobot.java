@@ -25,7 +25,7 @@ public class MuzzRobot
   boolean levantou_dedo_y = false;
   
   
-  public static int MIN_TIME_TO_CAPTURE_SCREEN=1000;
+  public static int MIN_TIME_TO_CAPTURE_SCREEN=700;
   static long LAST_CAPTURED_TIME=System.currentTimeMillis();
   static BufferedImage LAST_CAPTURED_IMAGE=null;
   

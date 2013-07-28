@@ -16,6 +16,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.muzzley.pcplugin.Consts;
 import com.muzzley.pcplugin.MuzzRobot;
 
 
@@ -27,7 +28,6 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	private MuzzRobot robot = new MuzzRobot();
 	
 	static private ScreenCapturerAgent single_instance;
-	static final String IMAGE_SERVER_ADDRESS="ws://sandbox-lx01.lab.muzzley.com:9999/";
 	public static int CAPTURE_DEFAULT_HEIGHT=1024;
 	public static float DEFAULT_DIFFERENCE_RATE=0.015f;
 	
@@ -36,7 +36,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	public static ScreenCapturerAgent getInstance(){
 		if (single_instance == null){
 			try {
-				single_instance=new ScreenCapturerAgent( new URI(IMAGE_SERVER_ADDRESS) );
+				single_instance=new ScreenCapturerAgent( new URI(Consts.IMAGE_SERVER_ADDRESS) );
 			}catch(Exception e){
 				e.printStackTrace();
 			}
