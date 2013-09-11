@@ -1,5 +1,6 @@
 package com.muzzley.pcplugin;
 
+import com.google.gson.JsonElement;
 import com.muzzley.lib.Activity;
 import com.muzzley.lib.Muzzley;
 import com.muzzley.lib.Participant;
@@ -88,7 +89,7 @@ public class MuzzApp {
     
     
     public void changeWidget(Participant participant, final String widget_name, Action<Response> listener_response, Action<Exception> listener_error){
-    	try{ 	
+    	try{
     		participant.changeWidget(widget_name, listener_response, listener_error);
     	}catch(Exception e){
     		listener_response.invoke(null);

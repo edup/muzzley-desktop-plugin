@@ -115,7 +115,7 @@ public class MainFrame extends JFrame{
         usersScrollPanel.getViewport().setBackground(Color.red);
         
         this.pack();
-        this.setSize(640, 600);
+        this.setSize(800, 700);
         this.setVisible(true);
         
         //TEST

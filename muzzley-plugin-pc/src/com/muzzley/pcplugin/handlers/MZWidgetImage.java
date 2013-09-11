@@ -38,6 +38,7 @@ import com.muzzley.lib.Participant;
 import com.muzzley.lib.commons.Action;
 import com.muzzley.lib.commons.Content;
 import com.muzzley.lib.commons.Response;
+import com.muzzley.pcplugin.Consts;
 import com.muzzley.pcplugin.MuzzRobot;
 import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent;
 import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent.ImageReadyOnServerEvent;
@@ -52,11 +53,28 @@ public class MZWidgetImage extends MZWidgetHandler{
 	static int n_instances=0;
 	
 	ImageReadyOnServerListener image_ready_listener = new ImageReadyOnServerListener() {
+				
 		@Override
 		public void onImageReady(ImageReadyOnServerEvent e) {
-			// TODO Auto-generated method stub
+			// TODO Auto-generated method stub	
+			if(streaming==false) return; // if not streaming bye bye
 			
-			if(streaming==false || can_send_again_to_client==false) return;
+			//if cannot send again to client
+			//it means that is still sending.
+			//Let's hold this image till it finished or arrive a new one to stream
+			while(!can_send_again_to_client){												
+				//Save some processor while waiting for a new image to arrive
+				//or the current is sent				
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+			
+			can_send_again_to_client=false;
 			
 			String result = (String) e.getSource();
 			
@@ -66,11 +84,12 @@ public class MZWidgetImage extends MZWidgetHandler{
 			obj.addProperty("mode", "center");					
 			JsonElement c = new Content("image", obj).d;
             
-			can_send_again_to_client=false;
+			
 			participant.changeWidget("image",  c,
 					new Action<Response>() {
                 @Override
                 public void invoke(Response r) {
+                	//System.out.println("This thread number: " + Thread.currentThread().getId());
                 	can_send_again_to_client=true;
                 }
             },
@@ -82,7 +101,7 @@ public class MZWidgetImage extends MZWidgetHandler{
                     return;
                 }
             });
-			
+
 		}
 	};  
 	
@@ -181,7 +200,7 @@ public class MZWidgetImage extends MZWidgetHandler{
         //panel.add(new JLabel("Stream seconds period"), c);
         c.gridx = 1;
         c.gridy = 2;
-        final JTextField textfield_stream_period = new JTextField(new Float(MuzzRobot.MIN_TIME_TO_CAPTURE_SCREEN/1000).toString());
+        final JTextField textfield_stream_period = new JTextField(new Float(Consts.MIN_TIME_TO_CAPTURE_SCREEN/1000).toString());
         //panel.add(textfield_stream_period, c);        
         
         
@@ -199,7 +218,7 @@ public class MZWidgetImage extends MZWidgetHandler{
 				try{
 					ScreenCapturerAgent.CAPTURE_DEFAULT_HEIGHT = Integer.parseInt(textfield_default_height.getText());
 					ScreenCapturerAgent.DEFAULT_DIFFERENCE_RATE = Float.parseFloat(textfield_stream_rate.getText());
-					MuzzRobot.MIN_TIME_TO_CAPTURE_SCREEN = Math.round(Float.parseFloat(textfield_stream_period.getText())*1000);
+					Consts.MIN_TIME_TO_CAPTURE_SCREEN = Math.round(Float.parseFloat(textfield_stream_period.getText())*1000);
 				}catch(Exception exp){
 					exp.printStackTrace();
 				}

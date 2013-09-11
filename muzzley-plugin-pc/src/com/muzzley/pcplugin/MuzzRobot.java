@@ -24,11 +24,7 @@ public class MuzzRobot
   boolean levantou_dedo_x = false;
   boolean levantou_dedo_y = false;
   
-  
-  public static int MIN_TIME_TO_CAPTURE_SCREEN=700;
-  static long LAST_CAPTURED_TIME=System.currentTimeMillis();
-  static BufferedImage LAST_CAPTURED_IMAGE=null;
-  
+
   
   public MuzzRobot()
   {
@@ -218,14 +214,7 @@ public class MuzzRobot
   
   
   public synchronized BufferedImage createScreenCapture(Rectangle screenRect){
-	  long now = System.currentTimeMillis();
-	  if(LAST_CAPTURED_IMAGE!=null && (now-LAST_CAPTURED_TIME < MIN_TIME_TO_CAPTURE_SCREEN))
-		  return LAST_CAPTURED_IMAGE;
-	  
-	  LAST_CAPTURED_IMAGE=robot.createScreenCapture(screenRect);
-	  LAST_CAPTURED_TIME=now;
-	  
-	 return LAST_CAPTURED_IMAGE;
+	  return robot.createScreenCapture(screenRect);
   }
   
 } 

@@ -64,6 +64,15 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 		TEMPLATE_MAP.add(conf2);		
 	}
 	
+	
+	class StatusCurrentKeys{
+		public boolean down=false;
+		public boolean up=false;
+		public boolean left=false;
+		public boolean right=false;
+	}
+	StatusCurrentKeys key_status = new StatusCurrentKeys(); 
+	
 
 	public MZWidgetGamepad(Participant participant) {
 		super(participant);
@@ -94,8 +103,10 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 					int key=0;
 					if(value==0){
 						//TURN RIGHT
-						System.out.println("RIGHT; "+button_right);
+						//System.out.println("RIGHT; "+button_right);
 						keyReset();
+						
+						key_status.right=true;
 						robot.keyEvent(button_right, 1);
 					}
 					else
@@ -103,6 +114,8 @@ public class MZWidgetGamepad extends MZWidgetHandler{
 						//TURN LEFT
 						System.out.println("LEFT: "+button_left);
 						keyReset();
+						
+						key_status.left=true;
 						robot.keyEvent(button_left, 1);
 					}else
 					if(value==270){

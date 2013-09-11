@@ -20,7 +20,6 @@ import com.muzzley.pcplugin.Consts;
 import com.muzzley.pcplugin.MuzzRobot;
 
 
-
 public class ScreenCapturerAgent extends WebSocketClient{
 	boolean can_run_capture_screen_thread=true;
 	boolean capture_screen=false;
@@ -73,7 +72,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 			// TODO Auto-generated method stub
 			while(can_run_capture_screen_thread==true){
 				try{
-					Thread.sleep(MuzzRobot.MIN_TIME_TO_CAPTURE_SCREEN);
+					Thread.sleep(Consts.MIN_TIME_TO_CAPTURE_SCREEN);
 					streamNewImage();
 				}catch(Exception e){ e.printStackTrace(); }
 			}
@@ -82,21 +81,32 @@ public class ScreenCapturerAgent extends WebSocketClient{
 		
 		
 		private void streamNewImage(){
-				if(capture_screen=false) return;
-				
+				if(capture_screen==false) return;
+
+				//double start = System.currentTimeMillis();
+				//int id=0;
 				BufferedImage img = robot.createScreenCapture(screen_size);
+				//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
+				
 				if(!bufferedImagesEqual(LAST_CAPTURED_IMAGE,img)){
 					capture_screen=false;
 					LAST_CAPTURED_IMAGE=img;
+					
 					img = Scalr.resize(img, CAPTURE_DEFAULT_HEIGHT);
+					//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
+					
+					
 					
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					try {
 						ImageIO.write(img, "jpg", baos);
-						baos.flush();					
+						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
+						baos.flush();			
+						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
 						send(baos.toByteArray());
-						
 						baos.close();
+						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
+						//System.out.println("***********\n*******************");
 					} catch (Exception e) {
 						System.out.println("exception...: " + e.getMessage());
 						// TODO Auto-generated catch block
@@ -118,25 +128,18 @@ public class ScreenCapturerAgent extends WebSocketClient{
 				      for (int y = 0; y < img1.getHeight(); y++) {
 				        if (img1.getRGB(x, y) != img2.getRGB(x, y) ) difference_count++;
 				        total_count++;
+				        
+				        //Test immediatly if its different enouph to say that is different
+				        //System.out.println("Diferent: " + difference_count+"/"+total_count);
+						float difference_rate = difference_count/total_count;
+						if(difference_rate>=DEFAULT_DIFFERENCE_RATE) return false;
 				      }
 				     }
 				}else {
 				    return false;
 				}
 				
-				if(difference_count==0) return true;
-				
-				//System.out.println("Diferent: " + difference_count+"/"+total_count);
-				float difference_rate = difference_count/total_count;
-				
-				if(difference_rate<=DEFAULT_DIFFERENCE_RATE){
-					return true;
-				}
-		        
-				//System.out.println("Different rate: " + (difference_rate));
-				
-				 
-				return false;
+				return true;
 			}
 		
 		
@@ -146,6 +149,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	public void onClose(int arg0, String arg1, boolean arg2) {
 		// TODO Auto-generated method stub
 		System.out.println("Connection closed: (" + arg0+ ")" + arg1);
+		can_run_capture_screen_thread = false;
 	}
 
 	@Override
@@ -165,6 +169,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 			
 			if(type.compareTo("init")==0){
 				capture_screen=true;
+				can_run_capture_screen_thread=true;
 				new Thread(new ScreenCapture()).start();
 			}else
 			if(type.compareTo("image-updated")==0){
@@ -188,7 +193,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	
 	//LISTENERS
 	
-	 public interface ImageReadyOnServerListener extends EventListener {
+	 public interface ImageReadyOnServerListener extends EventListener{
 		    public abstract void onImageReady(ImageReadyOnServerEvent e);
 	 }
 	 
