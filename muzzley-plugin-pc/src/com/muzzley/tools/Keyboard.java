@@ -156,4 +156,5 @@ public class Keyboard
     doType(keyCodes, offset + 1, length - 1);
     this.robot.keyRelease(keyCodes[offset]);
   } 
+  
 } 

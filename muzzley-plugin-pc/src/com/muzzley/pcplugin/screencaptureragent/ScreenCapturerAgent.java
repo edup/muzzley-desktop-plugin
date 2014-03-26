@@ -16,8 +16,8 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.muzzley.pcplugin.Consts;
-import com.muzzley.pcplugin.MuzzRobot;
+import com.muzzley.osplugin.Consts;
+import com.muzzley.osplugin.MuzzRobot;
 
 
 public class ScreenCapturerAgent extends WebSocketClient{
@@ -46,14 +46,14 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	
 	
 	
-	public ScreenCapturerAgent(URI serverURI) {
+	private ScreenCapturerAgent(URI serverURI) {
 		super(serverURI);
-		connect();
+		connect();		
 	}
 	
 	public void destroy(){
 		try{
-			System.out.println("Stopping connection to server...");
+			System.out.println("Stopping connection to image server...");
 			can_run_capture_screen_thread=false;
 			close();
 			single_instance=null;
@@ -68,7 +68,7 @@ public class ScreenCapturerAgent extends WebSocketClient{
 		Rectangle screen_size=new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		
 		@Override
-		public void run() {
+		public void run() {			
 			// TODO Auto-generated method stub
 			while(can_run_capture_screen_thread==true){
 				try{
@@ -83,8 +83,8 @@ public class ScreenCapturerAgent extends WebSocketClient{
 		private void streamNewImage(){
 				if(capture_screen==false) return;
 
-				//double start = System.currentTimeMillis();
-				//int id=0;
+				double start = System.currentTimeMillis();
+				int id=0;
 				BufferedImage img = robot.createScreenCapture(screen_size);
 				//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
 				
@@ -95,18 +95,17 @@ public class ScreenCapturerAgent extends WebSocketClient{
 					img = Scalr.resize(img, CAPTURE_DEFAULT_HEIGHT);
 					//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
 					
-					
-					
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					try {
 						ImageIO.write(img, "jpg", baos);
 						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
 						baos.flush();			
-						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
-						send(baos.toByteArray());
+						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));						
+						send(baos.toByteArray());						
+						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));						
 						baos.close();
-						//System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
-						//System.out.println("***********\n*******************");
+						System.out.println("(" + (++id) + "): " + (System.currentTimeMillis()-start));
+						System.out.println("***********\n*******************");
 					} catch (Exception e) {
 						System.out.println("exception...: " + e.getMessage());
 						// TODO Auto-generated catch block
@@ -188,7 +187,9 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	@Override
 	public void onOpen(ServerHandshake arg0) {
 		// TODO Auto-generated method stub
+		System.out.println("[Thread Connection opened] "+ Thread.currentThread().getId());
 	}
+	
 	
 	
 	//LISTENERS
@@ -219,6 +220,8 @@ public class ScreenCapturerAgent extends WebSocketClient{
 	
 	private void triggerImageReadyOnServerEvent(Object source, int id){
 		ImageReadyOnServerEvent event = new ImageReadyOnServerEvent(source, id);
+		
+		System.out.println("[Triggering] "+ Thread.currentThread().getId());
 		
 		for(int i=0; i!= imageReadyOnServerListeners.size(); i++){
 			ImageReadyOnServerListener imageReadyOnServerListener = (ImageReadyOnServerListener)imageReadyOnServerListeners.get(i);

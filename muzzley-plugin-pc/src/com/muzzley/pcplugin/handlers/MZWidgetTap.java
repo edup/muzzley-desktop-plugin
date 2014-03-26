@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
-import com.muzzley.pcplugin.MuzzRobot;
+import com.muzzley.osplugin.MuzzRobot;
 import com.muzzley.pcplugin.layout.LayoutHelper;
 import com.muzzley.pcplugin.layout.components.InputMethodKeyboard;
 import com.muzzley.pcplugin.layout.components.Key;

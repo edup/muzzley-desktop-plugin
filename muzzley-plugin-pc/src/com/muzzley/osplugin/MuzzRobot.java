@@ -1,10 +1,14 @@
-package com.muzzley.pcplugin;
+package com.muzzley.osplugin;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
 
 import com.muzzley.tools.Keyboard;
+import com.muzzley.tools.MyTools;
 
 
 
@@ -127,6 +131,20 @@ public class MuzzRobot
     } 
   } 
   
+	public void mouseRawMove(int x, int y) {
+	    try {
+	    	PointerInfo a = MouseInfo.getPointerInfo();
+	    	Point b = a.getLocation();
+	    	int currentX = (int) b.getX();
+	    	int currentY = (int) b.getY();
+	    	this.robot.mouseMove(currentX+x, currentY+y);
+	    }
+	    catch (Exception e) {
+	      e.printStackTrace();
+	    } 
+	}
+  
+  
   int dbl_click_n = 0;
   long last_time_touch_event = 0L;
   boolean mouse_is_down = false;
@@ -215,6 +233,10 @@ public class MuzzRobot
   
   public synchronized BufferedImage createScreenCapture(Rectangle screenRect){
 	  return robot.createScreenCapture(screenRect);
+  }
+  
+  public void keyPressRelease(char chr){
+	  this.keyboard.type(chr);
   }
   
 } 

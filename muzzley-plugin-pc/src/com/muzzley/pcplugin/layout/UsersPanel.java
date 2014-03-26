@@ -32,8 +32,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import com.muzzley.lib.Participant;
-import com.muzzley.pcplugin.Consts;
+import com.muzzley.osplugin.Consts;
 import com.muzzley.pcplugin.layout.UsersPanel.UserSelectedEvent;
+import com.muzzley.tools.MyTools;
 
 
 public class UsersPanel extends JPanel{
@@ -64,13 +65,18 @@ public class UsersPanel extends JPanel{
 		
 		BufferedImage img;
 		try {
-			img = ImageIO.read(new URL(participant.photoUrl));
-			JLabel picLabel = new JLabel(new ImageIcon( img.getScaledInstance(75, 75, Image.SCALE_SMOOTH) ));
 			JLabel nameLabel = new JLabel(participant.name);
 			nameLabel.setBorder(new EmptyBorder(0, 0, 3, 0) );
 			panel.content.add(nameLabel);
 			
+			img = ImageIO.read(new URL(participant.photoUrl));
+			if(img==null) img = MyTools.toBufferedImage(MyTools.createImage("logo.png", "Participant"));
+			System.out.println("Participant picture: " + participant.photoUrl + ", " + img);
+			
+			JLabel picLabel = new JLabel(new ImageIcon( img.getScaledInstance(75, 75, Image.SCALE_SMOOTH) ));
 			panel.content.add(picLabel);
+			
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,6 +141,16 @@ public class UsersPanel extends JPanel{
 	    }
 	    
 	    return participants;
+	 }
+	 public ArrayList<UserPanel> getAllParticipants(){
+			ArrayList<UserPanel> participants = new ArrayList<UserPanel>();
+			Iterator it = users.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry user = (Map.Entry)it.next();
+		        UserPanel userPanel = (UserPanel) user.getValue();
+		        participants.add(userPanel);
+		    }
+		    return participants;
 	 }
      
 	 

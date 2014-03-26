@@ -1,29 +1,22 @@
 package com.muzzley.pcplugin.handlers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
-
 import com.muzzley.lib.Participant;
 import com.muzzley.lib.commons.Action;
 import com.muzzley.lib.commons.Response;
-import com.muzzley.pcplugin.MuzzApp;
-import com.muzzley.pcplugin.MuzzRobot;
-import com.muzzley.pcplugin.layout.LayoutHelper;
-import com.muzzley.pcplugin.layout.components.Key;
+import com.muzzley.osplugin.MuzzApp;
+import com.muzzley.osplugin.MuzzRobot;
+import com.muzzley.osplugin.WidgetManager;
+import com.muzzley.osplugin.WidgetManager.Widget;
 
 public abstract class MZWidgetHandler {
 	static HashMap<String, MZWidgetHandler> widgets = new HashMap<String, MZWidgetHandler>();
-	public static String[] WIDGETS = { "Change widget...", "gamepad", "drawpad", "swipeNavigator", "image"};	
-	
-	
 	public abstract void processMessage(Participant.WidgetAction message);
 	public abstract void destroy();
 	public abstract JPanel getWidgetPanel();
 		
-	final Participant participant;
+	Participant participant;
 	protected MuzzRobot robot = MuzzApp.getRobot();	
 	
 	public MZWidgetHandler(Participant participant){
@@ -50,47 +43,41 @@ public abstract class MZWidgetHandler {
 	public static MZWidgetHandler onWidgetChanged(Participant participant, String widget_name){		
 		
 		//ADD THE INTERFACE HANDLER HERE
+		Widget widget = WidgetManager.getInstance().getClassByDisplayName(widget_name);
+		if(widget==null) return null;
 		
-		//if not in memory it creates a new one
 		MZWidgetHandler widget_object = null;
-		if(widget_name.compareTo("gamepad")==0){ 
-			widget_object = new MZWidgetGamepad(participant);
-		}else
-		if(widget_name.compareTo("wheel")==0){ 
-			widget_object = new MZWidgetWheel(participant);
-		}else
-		if(widget_name.compareTo("swipeNavigator")==0){ 
-			widget_object = new MZWidgetSwipeNavigator(participant);
-		}else
-		if(widget_name.compareTo("drawpad")==0){ 
-			widget_object = new MZWidgetDrawpad(participant);
-		}else
-		if(widget_name.compareTo("image")==0){ 
-			widget_object = new MZWidgetImage(participant);
-		}else
-		if(widget_name.compareTo("tap")==0){ 
-			widget_object = new MZWidgetTap(participant);
-		}else
-			return null;
+		try {
+			System.out.println("ClassName: " + widget.className);
+			//Prepare constructor
+			Class[] cArg = new Class[1];
+	        cArg[0] = Participant.class;
+			//Instance a new object
+			widget_object = (MZWidgetHandler) widget.className.getDeclaredConstructor(cArg).newInstance(participant);
+			widgets.put(participant.id, widget_object);
+			
+			participant.changeWidget(widget.name,  widget.options,
+					new Action<Response>() {
+	            @Override
+	            public void invoke(Response r) {
+	           
+	            }
+	        },
+	        new Action<Exception>() {
+	            @Override
+	            public void invoke(Exception e) {
+	           
+	                e.printStackTrace();
+	                return;
+	            }
+	        });
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("Exception changing widget: " + e1.getMessage());
+		} 
 		
 		
-		widgets.put(participant.id, widget_object);
-		
-		participant.changeWidget(widget_name,  null,
-				new Action<Response>() {
-            @Override
-            public void invoke(Response r) {
-           
-            }
-        },
-        new Action<Exception>() {
-            @Override
-            public void invoke(Exception e) {
-           
-                e.printStackTrace();
-                return;
-            }
-        });
 		
 		
 		return widget_object;

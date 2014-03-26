@@ -38,8 +38,8 @@ import com.muzzley.lib.Participant;
 import com.muzzley.lib.commons.Action;
 import com.muzzley.lib.commons.Content;
 import com.muzzley.lib.commons.Response;
-import com.muzzley.pcplugin.Consts;
-import com.muzzley.pcplugin.MuzzRobot;
+import com.muzzley.osplugin.Consts;
+import com.muzzley.osplugin.MuzzRobot;
 import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent;
 import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent.ImageReadyOnServerEvent;
 import com.muzzley.pcplugin.screencaptureragent.ScreenCapturerAgent.ImageReadyOnServerListener;
@@ -48,34 +48,22 @@ public class MZWidgetImage extends MZWidgetHandler{
 	
 	ScreenCapturerAgent screen_agent;
 	private boolean streaming = false;
-	boolean can_send_again_to_client=false;
+	
 	
 	static int n_instances=0;
 	
 	ImageReadyOnServerListener image_ready_listener = new ImageReadyOnServerListener() {
-				
+		Object mutex = new Object();		
+		
 		@Override
 		public void onImageReady(ImageReadyOnServerEvent e) {
+			System.out.println("[On Image Ready] "+ Thread.currentThread().getId());
 			// TODO Auto-generated method stub	
 			if(streaming==false) return; // if not streaming bye bye
 			
 			//if cannot send again to client
 			//it means that is still sending.
 			//Let's hold this image till it finished or arrive a new one to stream
-			while(!can_send_again_to_client){												
-				//Save some processor while waiting for a new image to arrive
-				//or the current is sent				
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-			
-			
-			can_send_again_to_client=false;
-			
 			String result = (String) e.getSource();
 			
 			JsonObject obj = new JsonObject();
@@ -84,19 +72,17 @@ public class MZWidgetImage extends MZWidgetHandler{
 			obj.addProperty("mode", "center");					
 			JsonElement c = new Content("image", obj).d;
             
-			
 			participant.changeWidget("image",  c,
 					new Action<Response>() {
                 @Override
                 public void invoke(Response r) {
                 	//System.out.println("This thread number: " + Thread.currentThread().getId());
-                	can_send_again_to_client=true;
+                	
                 }
             },
             new Action<Exception>() {
                 @Override
                 public void invoke(Exception e) {
-                	can_send_again_to_client=true;
                     e.printStackTrace();
                     return;
                 }
@@ -123,7 +109,6 @@ public class MZWidgetImage extends MZWidgetHandler{
 			screen_agent=null;
 		}else{
 			streaming = true;
-			can_send_again_to_client=true;
 			screen_agent = ScreenCapturerAgent.getInstance();
 			screen_agent.addImageReadyOnServerListener(image_ready_listener);
 		}

@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.muzzley.lib.Activity;
-import com.muzzley.pcplugin.Consts;
+import com.muzzley.osplugin.Consts;
 import com.muzzley.pcplugin.layout.UIXJPanel;
 import com.muzzley.pcplugin.layout.VerticalLayout;
 import com.muzzley.pcplugin.layout.WrapLayout;

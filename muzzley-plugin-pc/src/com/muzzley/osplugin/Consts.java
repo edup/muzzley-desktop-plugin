@@ -1,4 +1,4 @@
-package com.muzzley.pcplugin;
+package com.muzzley.osplugin;
 
 public class Consts {
 	public static String URL_LOGO = "http://www.muzzley.com/documentation/img/Logo.png";

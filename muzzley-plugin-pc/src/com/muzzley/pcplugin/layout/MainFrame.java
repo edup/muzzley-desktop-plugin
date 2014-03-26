@@ -14,6 +14,10 @@ a graphical program as simply as possible.mag-27Apr2008
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -24,6 +28,8 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -31,11 +37,14 @@ import com.muzzley.lib.Activity;
 import com.muzzley.lib.Participant;
 import com.muzzley.lib.commons.Action;
 import com.muzzley.lib.commons.Response;
-import com.muzzley.pcplugin.Consts;
-import com.muzzley.pcplugin.MuzzApp;
+import com.muzzley.osplugin.Consts;
+import com.muzzley.osplugin.MuzzApp;
+import com.muzzley.osplugin.WidgetManager;
 import com.muzzley.pcplugin.handlers.MZWidgetHandler;
 import com.muzzley.pcplugin.layout.UsersPanel.UserSelectedEvent;
 import com.muzzley.pcplugin.layout.screens.ScreenPair;
+import com.muzzley.tools.JPopupMenuEx;
+import com.muzzley.tools.MyTools;
 
 public class MainFrame extends JFrame{
 	MuzzApp muzzapp;
@@ -52,13 +61,17 @@ public class MainFrame extends JFrame{
 	JPanel participant_panel;
 	JComboBox widgets_list;
 	
+	AppSysTray systray;
+	
 	// Create a constructor method
 	public MainFrame(){
 	  super();
 	  //consumer = new MuzzleyStateMachine(this);
 	  muzzapp = new MuzzApp("41f59b4f660cf28b", this);
+	  systray = new AppSysTray(this);
 	  createAndShowGUI();
 	}
+	
 	
 	@Override
 	public Dimension getPreferredSize() {
@@ -76,7 +89,55 @@ public class MainFrame extends JFrame{
     public void createAndShowGUI(){
         //Create and set up the window.
         this.setTitle("Muzzley plugin - You Control!");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        this.addWindowListener( new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+				systray.showHideTrigger(true);
+				System.out.println("Opened...");
+			}
+						
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println("Closed...");
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println("Closing...");
+				systray.showHideTrigger(false);
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+        
         this.setLayout(new BorderLayout());
         this.setResizable(true);
         
@@ -116,7 +177,7 @@ public class MainFrame extends JFrame{
         
         this.pack();
         this.setSize(800, 700);
-        this.setVisible(true);
+        
         
         //TEST
         
@@ -189,7 +250,8 @@ public class MainFrame extends JFrame{
 		});
     }
 	
-	public void setActivity(Activity mzActivity){		
+	public void setActivity(Activity mzActivity){
+		systray.setStatus(mzActivity);
 		screenPair.setActivity(mzActivity);
 	}
 	
@@ -224,7 +286,8 @@ public class MainFrame extends JFrame{
 	
 	
 	void paintWidgetsList(){
-		widgets_list = new JComboBox(MZWidgetHandler.WIDGETS);
+		widgets_list = new JComboBox(WidgetManager.getInstance().getDisplayNamesArray());
+		widgets_list.insertItemAt("Change widget...", 0);
 		widgets_list.setSelectedIndex(0);
 		
 		
@@ -261,6 +324,19 @@ public class MainFrame extends JFrame{
 		
 		
 		desktopPanel.repaint();
+	}
+	
+	public void changeWidgetToAllParticipants(String widgetName) {
+		ArrayList<UserPanel> participants=usersPanel.getAllParticipants();
+		if(participants.size()==0) {
+			JOptionPane.showMessageDialog(null, "Please pair with at least one smartphone using Muzzley App (appstore/google play).");
+		}
+		
+		for(int i=0; i!=participants.size(); i++){
+    		final UserPanel userPanel = participants.get(i);
+    		final Participant participant = userPanel.getParticipant();
+    		userPanel.onWidgetChanged(widgetName);
+    	}
 	}
 	
 	

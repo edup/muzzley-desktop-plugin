@@ -1,6 +1,5 @@
-package com.muzzley.pcplugin;
+package com.muzzley.osplugin;
 
-import com.google.gson.JsonElement;
 import com.muzzley.lib.Activity;
 import com.muzzley.lib.Muzzley;
 import com.muzzley.lib.Participant;

@@ -1,4 +1,4 @@
-package com.muzzley.pcplugin;
+package com.muzzley.osplugin;
 
 import java.io.IOException;
 
@@ -14,6 +14,8 @@ public class Main
   {
     try
     {
+    	System.out.println("[Thread ID] Start: "+ Thread.currentThread().getId());
+    	    	
       
     	/* Use an appropriate Look and Feel */
         try {
@@ -24,7 +26,6 @@ public class Main
         	//System.out.println("Look and feel (OS): " + UIManager.getSystemLookAndFeelClassName());
         	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-            
             
         } catch (UnsupportedLookAndFeelException ex) {
             ex.printStackTrace();
