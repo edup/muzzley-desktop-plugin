@@ -29,27 +29,11 @@ public class Main
       
     	/* Use an appropriate Look and Feel */
         try {
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            //UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");            
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-            
-        	//System.out.println("Look and feel (OS): " + UIManager.getSystemLookAndFeelClassName());
-        	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            
-        } catch (UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-        } catch (InstantiationException ex) {
-            ex.printStackTrace();
-        } catch (ClassNotFoundException ex) {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
-        /* Turn off metal's use of bold fonts */
-        //UIManager.put("swing.boldMetal", Boolean.FALSE);
-         
+                 
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -57,8 +41,6 @@ public class Main
                 new MainFrame();
             }
         });
-
-  	  
       
     }catch (Exception e) {
       e.printStackTrace();

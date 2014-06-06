@@ -12,6 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -63,14 +65,19 @@ public class UsersPanel extends JPanel{
 		UserPanel panel = new UserPanel(participant);
 		users.put(participant.id, panel);
 		
-		BufferedImage img;
 		try {
 			JLabel nameLabel = new JLabel(participant.name);
 			nameLabel.setBorder(new EmptyBorder(0, 0, 3, 0) );
 			panel.content.add(nameLabel);
 			
-			img = ImageIO.read(new URL(participant.photoUrl));
-			if(img==null) img = MyTools.toBufferedImage(MyTools.createImage("logo.png", "Participant"));
+			BufferedImage img = ImageIO.read(new URL(participant.photoUrl));
+	
+			System.out.println(img);
+			System.out.println("Img height: " + img.getHeight());
+			
+			if(img==null) 
+				img = MyTools.toBufferedImage(MyTools.createImage("appicon.png", "Participant"));
+			
 			System.out.println("Participant picture: " + participant.photoUrl + ", " + img);
 			
 			JLabel picLabel = new JLabel(new ImageIcon( img.getScaledInstance(75, 75, Image.SCALE_SMOOTH) ));

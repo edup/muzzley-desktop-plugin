@@ -11,7 +11,10 @@ a graphical program as simply as possible.mag-27Apr2008
 */
 
 //Import the basic graphics classes.
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -24,6 +27,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javaEventing.EventManager;
+import javaEventing.interfaces.Event;
+import javaEventing.interfaces.GenericEventListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -39,6 +46,9 @@ import com.desktop.mobile.handlers.MZWidgetHandler;
 import com.desktop.osplugin.Consts;
 import com.desktop.osplugin.MuzzApp;
 import com.desktop.osplugin.WidgetManager;
+import com.desktop.osplugin.events.OnConnectionChanged;
+import com.desktop.osplugin.events.OnParticipant;
+import com.desktop.osplugin.events.OnParticipantQuit;
 import com.desktop.tools.MyTools;
 import com.muzzley.lib.Activity;
 import com.muzzley.lib.Participant;
@@ -47,14 +57,12 @@ import com.muzzley.lib.commons.Response;
 
 public class MainFrame extends JFrame{
 	MuzzApp muzzapp;
-	
 	JPanel main_panel;
 	
 	JPanel desktopPanel;
 	UsersPanel usersPanel;
 	
 	ScreenPair screenPair;
-	
 	JPanel options_panel;
 	
 	JPanel participant_panel;
@@ -65,10 +73,16 @@ public class MainFrame extends JFrame{
 	// Create a constructor method
 	public MainFrame(){
 	  super();
+	  
+	  System.out.println("Drawing application...");
+	  
 	  //consumer = new MuzzleyStateMachine(this);
-	  muzzapp = new MuzzApp("41f59b4f660cf28b", this);
 	  systray = new AppSysTray(this);
 	  createAndShowGUI();
+	  
+	  registerListeners();
+	  
+	  muzzapp = new MuzzApp("41f59b4f660cf28b");
 	}
 	
 	
@@ -249,9 +263,49 @@ public class MainFrame extends JFrame{
 		});
     }
 	
-	public void setActivity(Activity mzActivity){
-		systray.setStatus(mzActivity);
-		screenPair.setActivity(mzActivity);
+	private void setActivity(Activity mzActivity){
+		
+		if(mzActivity!=null)
+			screenPair.setActivity(mzActivity);
+	
+		//TODO: in case of null
+	}
+	
+	private void registerListeners() {
+
+		
+		//onConnection
+		EventManager.registerEventListener( 
+				new GenericEventListener(){
+					@Override
+					public void eventTriggered(Object source, Event event) {
+						OnConnectionChanged obj = (OnConnectionChanged) event;
+						setActivity(obj.getActivity());
+					}    // <-- Register an Event Listener.
+			
+
+		}, OnConnectionChanged.class);
+		
+		//onParticipant
+		EventManager.registerEventListener( 
+				new GenericEventListener(){
+					@Override
+					public void eventTriggered(Object source, Event event) {
+						OnParticipant obj = (OnParticipant) event;
+						onParticipant(obj.get());
+					}    // <-- Register an Event Listener.
+		}, OnParticipant.class);
+
+		//onParticipantQuit
+		EventManager.registerEventListener( 
+				new GenericEventListener(){
+					@Override
+					public void eventTriggered(Object source, Event event) {
+						OnParticipantQuit obj = (OnParticipantQuit) event;
+						onParticipantQuit(obj.get());
+					}    // <-- Register an Event Listener.
+		}, OnParticipantQuit.class);
+		
 	}
 	
 	

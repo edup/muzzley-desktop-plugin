@@ -21,6 +21,7 @@ import com.desktop.gui.layout.UIXJPanel;
 import com.desktop.gui.layout.VerticalLayout;
 import com.desktop.gui.layout.WrapLayout;
 import com.desktop.osplugin.Consts;
+import com.desktop.tools.MyTools;
 import com.muzzley.lib.Activity;
 
 public class ScreenPair extends JPanel{
@@ -50,25 +51,11 @@ public class ScreenPair extends JPanel{
 		panel2.setLayout(new FlowLayout());
 		panel2.setBackground(Color.WHITE);
 		this.add(panel2);
-
-		
-		try {
-			BufferedImage logo_img = ImageIO.read(new URL(Consts.URL_LOGO));
-			JLabel picLabel = new JLabel(new ImageIcon( logo_img ));
-			panel1.add(picLabel);
-			picLabel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-		}
-		catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-		}
+	
+		JLabel picLabel = new JLabel(new ImageIcon( MyTools.createImage("muzzley_logo.png", "logo") ));
+		panel1.add(picLabel);
+		picLabel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+	
 	}
 	public void setActivity(Activity mzActivity) {
 		// TODO Auto-generated method stub

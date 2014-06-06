@@ -18,6 +18,8 @@ This is the project that is open source in this git repository.
 
 You will need JAVA 1.6 to compile this project
 
+You will need this jar: https://code.google.com/p/javaeventing/
+
 Main file here: [src/com/desktop/osplugin/Main.java](src/com/desktop/gui/Main.java)
 
 Mobile application

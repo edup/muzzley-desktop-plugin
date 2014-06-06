@@ -1,7 +1,12 @@
 package com.desktop.osplugin;
 
+import javaEventing.EventManager;
+
 import com.desktop.gui.layout.MainFrame;
 import com.desktop.mobile.handlers.MZWidgetHandler;
+import com.desktop.osplugin.events.OnConnectionChanged;
+import com.desktop.osplugin.events.OnParticipant;
+import com.desktop.osplugin.events.OnParticipantQuit;
 import com.muzzley.lib.Activity;
 import com.muzzley.lib.Muzzley;
 import com.muzzley.lib.Participant;
@@ -15,18 +20,17 @@ import com.muzzley.lib.commons.Response;
  * @author tiago
  */
 public class MuzzApp {
-	final MainFrame uix;
 	static private MuzzRobot robot=new MuzzRobot();	
 	
-    public MuzzApp(final String appToken, final MainFrame uix) {
-    
-    	this.uix = uix;
+    public MuzzApp(final String appToken) {
     	
         Muzzley.connectApp(appToken, new Action<Activity>() {
             @Override
             public void invoke(Activity activity) {
-                System.out.println("  Id: " + activity.id + ", QR code URL: " + activity.qrCodeUrl);
-                uix.setActivity(activity);
+                System.out.println("Id: " + activity.id + ", QR code URL: " + activity.qrCodeUrl);
+   
+                //Trigger event
+                EventManager.triggerEvent(this, new OnConnectionChanged(this, OnConnectionChanged.State.CONNECTED, activity) );
                 
                 activity.onParticipant.add(new Action<Participant>() {
                     @Override
@@ -35,7 +39,7 @@ public class MuzzApp {
                         System.out.println("Participant joined. Properties:");
                         System.out.println("  Name: " + participant.name);
                 
-                        uix.onParticipant(participant);
+                        EventManager.triggerEvent(this, new OnParticipant(this, participant));
                         
                         participant.onAction.add(new Action<Participant.WidgetAction>() {
 
@@ -63,7 +67,7 @@ public class MuzzApp {
                             @Override
                             public void invoke(Void t) {
                                 System.out.println("Participant " + participant.name + " quit.");
-                                uix.onParticipantQuit(participant);
+                                EventManager.triggerEvent(this, new OnParticipantQuit(this, participant));
                             }
                         });
                     }
@@ -72,7 +76,7 @@ public class MuzzApp {
                 activity.onQuit.add(new Action<Void>() {
                     @Override
                     public void invoke(Void v) {
-                    	
+                    	System.out.println("Activity quitted........");
                     }
                 });
                 

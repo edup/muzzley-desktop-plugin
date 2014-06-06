@@ -1,38 +1,25 @@
 package com.desktop.gui.layout;
 
 import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
+import javaEventing.EventManager;
+import javaEventing.interfaces.Event;
+import javaEventing.interfaces.GenericEventListener;
+
 import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-
-import org.imgscalr.Scalr;
-
 import com.desktop.osplugin.WidgetManager;
+import com.desktop.osplugin.events.OnConnectionChanged;
 import com.desktop.tools.MyTools;
 import com.muzzley.lib.Activity;
+
 
 public class AppSysTray {
 	MainFrame mainframe;
@@ -44,24 +31,43 @@ public class AppSysTray {
     JMenuItem showHideItem = new JMenuItem("show app");
     JMenuItem aboutItem = new JMenuItem("about");
     JMenuItem exitItem = new JMenuItem("exit");
-    
+    TrayIcon trayIcon;
+
     //JCheckBoxMenuItem cb1 = new JCheckBoxMenuItem("accept Connections");
 	
 	public AppSysTray(MainFrame mainframe) {
 		// TODO Auto-generated constructor stub
 		this.mainframe = mainframe;
 		addSystemTray();
+
+		registerListeners();
 	}
 	
-	public void setStatus(String statusStr) {
-		status.setText(statusStr);
-	}
-	
-	public void setStatus(Activity mzActivity) {
-		// TODO Auto-generated method stub
-		status.setText("Muzzley pair key: " + mzActivity.id);
-		trayPopup.pack();
+	private void registerListeners() {
 		
+		EventManager.registerEventListener( 
+				new GenericEventListener(){
+					@Override
+					public void eventTriggered(Object source, Event event) {
+						OnConnectionChanged obj = (OnConnectionChanged) event;
+						changeTrayIcon(obj.isConnected());
+						setStatus(obj.getActivity());
+					}    // <-- Register an Event Listener.
+			
+
+		}, OnConnectionChanged.class);	
+		
+	}
+	
+	private void setStatus(Activity mzActivity) {
+		// TODO Auto-generated method stub
+		if(mzActivity == null) {
+			status.setText("Not connected...");			
+		} else {
+			status.setText("Muzzley pair key: " + mzActivity.id);
+		}
+		
+		trayPopup.pack();
 	}
 	
 	public void showHideTrigger(boolean flag) {
@@ -86,14 +92,29 @@ public class AppSysTray {
 		}
 	}
 	
+	
+	private void changeTrayIcon(boolean connected) {
+		
+		if (connected == true) {
+			trayIcon.setImage(MyTools.createImage("appicon.png", "tray icon"));
+		}else {
+			trayIcon.setImage(MyTools.createImage("appicon_not_connected.png", "tray icon"));			
+		}
+		
+	}
+	
+	
 	public void addSystemTray() {
 		//Check the SystemTray is supported
         if (!SystemTray.isSupported()) {
             System.out.println("SystemTray is not supported");
             return;
         }
-        final TrayIcon trayIcon =
-                new TrayIcon(MyTools.createImage("logo.png", "tray icon"));
+        
+        trayIcon =
+                new TrayIcon(MyTools.createImage("appicon_not_connected.png", "tray icon"));
+        
+
         trayIcon.setImageAutoSize(true);
         
         final SystemTray tray = SystemTray.getSystemTray();
