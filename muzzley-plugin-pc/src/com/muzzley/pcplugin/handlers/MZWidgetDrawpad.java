@@ -22,7 +22,7 @@ import com.muzzley.pcplugin.layout.components.Key;
 
 
 public class MZWidgetDrawpad extends MZWidgetHandler{
-	JComboBox<Key> combo_tap;
+	JComboBox combo_tap;
 
 	double screen_width=0;
 	double screen_height=0;

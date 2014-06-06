@@ -19,16 +19,16 @@ import com.muzzley.lib.Participant;
 
 
 public class MZWidgetWheel extends MZWidgetHandler{
-	JComboBox<Key> combo_up;
-	JComboBox<Key> combo_down;
-	JComboBox<Key> combo_left;
-	JComboBox<Key> combo_right;
+	JComboBox combo_up;
+	JComboBox combo_down;
+	JComboBox combo_left;
+	JComboBox combo_right;
 	
 	
-	JComboBox<Key> combo_a;
-	JComboBox<Key> combo_b;
-	JComboBox<Key> combo_c;
-	JComboBox<Key> combo_d;
+	JComboBox combo_a;
+	JComboBox combo_b;
+	JComboBox combo_c;
+	JComboBox combo_d;
 	
 	Repeater repeater;
 
@@ -264,7 +264,7 @@ public class MZWidgetWheel extends MZWidgetHandler{
 	}
 	
 	
-	public JComboBox<Key> createGuiComboKeyItem(JPanel main_panel, String label_name, int default_element, Key[] keyboardArray){
+	public JComboBox createGuiComboKeyItem(JPanel main_panel, String label_name, int default_element, Key[] keyboardArray){
 		JPanel element_panel = new JPanel();
 		element_panel.setLayout(new GridLayout(2, 1));
 		JLabel label = new JLabel(label_name);	
@@ -272,7 +272,7 @@ public class MZWidgetWheel extends MZWidgetHandler{
 		 //Set JLabel font using new created font  
 		 label.setFont(newLabelFont);  
 		
-		JComboBox<Key>combo = new JComboBox<Key>(keyboardArray);
+		JComboBox combo = new JComboBox(keyboardArray);
 		setComboDefault(combo, default_element);
 		element_panel.add(label);
 		element_panel.add(combo);

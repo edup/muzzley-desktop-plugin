@@ -25,14 +25,14 @@ import com.muzzley.lib.Participant;
 
 
 public class MZWidgetSwipeNavigator extends MZWidgetHandler{
-	JComboBox<Key> combo_up;
-	JComboBox<Key> combo_down;
-	JComboBox<Key> combo_left;
-	JComboBox<Key> combo_right;
+	JComboBox combo_up;
+	JComboBox combo_down;
+	JComboBox combo_left;
+	JComboBox combo_right;
 	
-	JComboBox<Key> combo_tap;
-	JComboBox<Key> combo_bOk;
-	JComboBox<Key> combo_bBack;
+	JComboBox combo_tap;
+	JComboBox combo_bOk;
+	JComboBox combo_bBack;
 	
 	//TEMPLATE MAPS
 	static ArrayList<ArrayList> TEMPLATE_MAP = new ArrayList<ArrayList>();
@@ -146,7 +146,7 @@ public class MZWidgetSwipeNavigator extends MZWidgetHandler{
         
         //TEMPLATE PANEL
         JPanel template_panel = LayoutHelper.getJPanel(2);    
-        JComboBox<Key> templateCombo=LayoutHelper.createGuiComboKeyItem(template_panel, "Template Map:", 0, LayoutHelper.getTemplateKeyMap(TEMPLATE_MAP));        
+        JComboBox templateCombo=LayoutHelper.createGuiComboKeyItem(template_panel, "Template Map:", 0, LayoutHelper.getTemplateKeyMap(TEMPLATE_MAP));        
         templateCombo.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

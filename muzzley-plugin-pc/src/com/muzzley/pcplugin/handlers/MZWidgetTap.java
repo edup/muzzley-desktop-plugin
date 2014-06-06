@@ -25,7 +25,7 @@ import com.muzzley.lib.Participant;
 
 
 public class MZWidgetTap extends MZWidgetHandler{
-	JComboBox<Key> combo_tap;
+	JComboBox combo_tap;
 		
 	
 	public static int martelada_counter=0; //Isto é uma martelada para saber se é o user 1 ou 2 que entra porque ainda não temos mapeamento de keys

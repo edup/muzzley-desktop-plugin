@@ -69,7 +69,7 @@ public class LayoutHelper {
 		}
 	}
 	
-	static public JComboBox<Key> createGuiComboKeyItem(JPanel main_panel, String label_name, int default_element, Key[] keyboardArray){
+	static public JComboBox createGuiComboKeyItem(JPanel main_panel, String label_name, int default_element, Key[] keyboardArray){
 		JPanel element_panel = new JPanel();
 		element_panel.setBackground(Color.WHITE);
 		
@@ -80,7 +80,7 @@ public class LayoutHelper {
 		 //Set JLabel font using new created font  
 		 label.setFont(newLabelFont);  
 		
-		JComboBox<Key>combo = new JComboBox<Key>(keyboardArray);
+		JComboBox combo = new JComboBox(keyboardArray);
 		setComboDefault(combo, default_element);
 		element_panel.add(label);
 		element_panel.add(combo);
