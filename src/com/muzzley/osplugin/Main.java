@@ -14,6 +14,7 @@ import com.muzzley.pcplugin.layout.MainFrame;
  * The app starts here.
  * In order to interact with this app you need to install
  * the muzzley app (android/ios) in your smartphone
+ *
  */
 
 
