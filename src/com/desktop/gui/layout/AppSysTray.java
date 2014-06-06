@@ -36,7 +36,7 @@ import com.muzzley.lib.Activity;
 
 public class AppSysTray {
 	MainFrame mainframe;
-	JPopupMenuEx trayPopup = new JPopupMenuEx();;
+	JPopupMenuEnhanced trayPopup = new JPopupMenuEnhanced();;
 
     // Create a pop-up menu components
 	JMenuItem status = new JMenuItem("Not connected");

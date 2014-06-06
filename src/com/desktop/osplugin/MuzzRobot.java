@@ -8,8 +8,6 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 
 import com.desktop.tools.Keyboard;
-import com.desktop.tools.MyTools;
-
 
 
 public class MuzzRobot

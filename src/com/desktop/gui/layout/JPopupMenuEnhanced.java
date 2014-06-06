@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 
 /** @see http://stackoverflow.com/questions/7254488 */
-public class JPopupMenuEx extends JPopupMenu {
+public class JPopupMenuEnhanced extends JPopupMenu {
 	
     private static class JSeparatorEx extends JSeparator {
 
