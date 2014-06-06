@@ -18,7 +18,7 @@ This is the project that is open source in this git repository.
 
 You will need JAVA 1.6 to compile this project
 
-Main file here: [src/com/muzzley/osplugin/Main.java](src/com/muzzley/osplugin/Main.java)
+Main file here: [src/com/desktop/gui/Main.java](src/com/desktop/gui/Main.java)
 
 Mobile application
 ------------------
